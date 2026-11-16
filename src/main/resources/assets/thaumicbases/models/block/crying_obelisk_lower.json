@@ -1,0 +1,8 @@
+{
+  "textures": {
+    "side": "thaumicbases:block/crying_obelisk_lower",
+    "bottom": "thaumicbases:block/crying_obelisk_tb",
+    "top": "thaumicbases:block/crying_obelisk_tb"
+  },
+  "parent": "minecraft:block/cube_bottom_top"
+}

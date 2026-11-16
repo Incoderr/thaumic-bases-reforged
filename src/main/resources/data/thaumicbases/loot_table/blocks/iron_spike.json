@@ -1,0 +1,1 @@
+{"pools":[{"condition":{"type":"minecraft:survives_explosion"},"rolls":1,"entries":[{"name":"thaumicbases:iron_spike","type":"minecraft:item"}]}],"type":"minecraft:block"}

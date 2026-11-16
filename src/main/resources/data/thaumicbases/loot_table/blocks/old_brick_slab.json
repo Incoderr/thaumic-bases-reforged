@@ -1,0 +1,1 @@
+{"type":"minecraft:block","pools":[{"rolls":1,"modifier":{"type":"minecraft:explosion_decay"},"entries":[{"name":"thaumicbases:old_brick_slab","modifier":{"condition":{"type":"minecraft:match_block","state":{"type":"double"},"blocks":"thaumicbases:old_brick_slab"},"type":"minecraft:set_count","count":2},"type":"minecraft:item"}]}]}

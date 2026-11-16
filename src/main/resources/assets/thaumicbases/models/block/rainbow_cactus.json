@@ -1,0 +1,1 @@
+{"parent":"minecraft:block/cactus","render_type":"minecraft:cutout","textures":{"particle":"thaumicbases:block/rainbow_cactus_side","side":"thaumicbases:block/rainbow_cactus_side","top":"thaumicbases:block/rainbow_cactus_top","bottom":"thaumicbases:block/rainbow_cactus_bottom"}}

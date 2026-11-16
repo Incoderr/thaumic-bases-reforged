@@ -1,0 +1,9 @@
+newmtl Material.001
+Kd 1.0 1.0 1.0
+map_Kd #glass
+newmtl Material.001_thaumUV.png
+Kd 1.0 1.0 1.0
+map_Kd #base
+newmtl Material.002
+Kd 1.0 1.0 1.0
+map_Kd #crystal

@@ -1,0 +1,22 @@
+{
+  "anvil_cost": 4,
+  "description": {
+    "translate": "enchantment.thaumicbases.elder_wisdom"
+  },
+  "exclusive_set": "#thaumicbases:exclusive_set/essence",
+  "max_cost": {
+    "per_level_above_first": 5,
+    "base": 26
+  },
+  "max_level": 5,
+  "min_cost": {
+    "per_level_above_first": 5,
+    "base": 6
+  },
+  "primary_items": "#minecraft:enchantable/melee_weapon",
+  "slots": [
+    "mainhand"
+  ],
+  "supported_items": "#minecraft:enchantable/weapon",
+  "weight": 2
+}

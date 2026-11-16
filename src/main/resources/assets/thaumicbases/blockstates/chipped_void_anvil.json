@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "thaumicbases:block/chipped_void_anvil"
+    },
+    "facing=north": {
+      "y": 180,
+      "model": "thaumicbases:block/chipped_void_anvil"
+    },
+    "facing=west": {
+      "y": 90,
+      "model": "thaumicbases:block/chipped_void_anvil"
+    },
+    "facing=east": {
+      "y": 270,
+      "model": "thaumicbases:block/chipped_void_anvil"
+    }
+  }
+}

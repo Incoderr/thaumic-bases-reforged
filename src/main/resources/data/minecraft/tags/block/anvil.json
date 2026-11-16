@@ -1,0 +1,10 @@
+{
+  "values": [
+    "thaumicbases:thaumium_anvil",
+    "thaumicbases:chipped_thaumium_anvil",
+    "thaumicbases:damaged_thaumium_anvil",
+    "thaumicbases:void_anvil",
+    "thaumicbases:chipped_void_anvil",
+    "thaumicbases:damaged_void_anvil"
+  ]
+}

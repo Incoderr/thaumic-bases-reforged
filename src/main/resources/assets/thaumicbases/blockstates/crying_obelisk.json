@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "above=false,below=false": {
+      "model": "thaumicbases:block/crying_obelisk"
+    },
+    "above=true,below=false": {
+      "model": "thaumicbases:block/crying_obelisk_lower"
+    },
+    "above=false,below=true": {
+      "model": "thaumicbases:block/crying_obelisk_upper"
+    },
+    "above=true,below=true": {
+      "model": "thaumicbases:block/crying_obelisk"
+    }
+  }
+}

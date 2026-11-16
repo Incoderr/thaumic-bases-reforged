@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "thaumicbases:block/crying_obsidian"
+  },
+  "parent": "minecraft:block/cube_all"
+}

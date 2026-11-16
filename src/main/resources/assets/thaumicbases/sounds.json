@@ -1,0 +1,20 @@
+{
+  "revolver_reload": {
+    "subtitle": "subtitles.thaumicbases.revolver_reload",
+    "sounds": [
+      "thaumicbases:revolver_reload"
+    ]
+  },
+  "revolver_no_ammo": {
+    "subtitle": "subtitles.thaumicbases.revolver_no_ammo",
+    "sounds": [
+      "thaumicbases:revolver_no_ammo"
+    ]
+  },
+  "revolver_shot": {
+    "subtitle": "subtitles.thaumicbases.revolver_shot",
+    "sounds": [
+      "thaumicbases:revolver_shot"
+    ]
+  }
+}

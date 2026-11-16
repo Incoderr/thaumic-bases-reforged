@@ -1,0 +1,1 @@
+{"variants":{"lit=false,has_logs=false":{"model":"thaumicbases:block/thaumic_campfire"},"lit=false,has_logs=true":{"model":"thaumicbases:block/thaumic_campfire_loaded"},"lit=true":{"model":"thaumicbases:block/thaumic_campfire_lit"}}}

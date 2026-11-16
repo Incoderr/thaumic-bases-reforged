@@ -1,0 +1,8 @@
+{
+  "textures": {
+    "body": "thaumicbases:block/thaumium_anvil_base",
+    "particle": "thaumicbases:block/thaumium_anvil_base",
+    "top": "thaumicbases:block/thaumium_anvil_top_damaged_1"
+  },
+  "parent": "minecraft:block/template_anvil"
+}
