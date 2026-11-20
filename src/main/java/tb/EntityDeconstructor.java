@@ -107,9 +107,9 @@ final class EntityDeconstructor extends Block implements EntityBlock {
                                           Player player, InteractionHand hand, BlockHitResult hit) {
         if (!(level.getBlockEntity(pos) instanceof Chamber chamber)) return InteractionResult.PASS;
         var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (!id.getNamespace().equals(Bases.ID) || !id.getPath().endsWith("_crystal_block")) return InteractionResult.PASS;
+        if (!id.getNamespace().equals(Bases.ID) || !id.getPath().endsWith("_crystal_block")) return InteractionResult.TRY_WITH_EMPTY_HAND;
         int index = CRYSTALS.indexOf(id.getPath().replace("_crystal_block", ""));
-        if (index < 0) return InteractionResult.PASS;
+        if (index < 0) return InteractionResult.TRY_WITH_EMPTY_HAND;
         int current = state.getValue(CRYSTAL_MASK);
         int bit = 1 << index;
         if (!level.isClientSide()) {

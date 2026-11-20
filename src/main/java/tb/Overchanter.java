@@ -89,7 +89,7 @@ final class Overchanter extends Block implements EntityBlock, WandInteractable {
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
         if (Wands.isWand(stack) || !(level.getBlockEntity(pos) instanceof Table table) || !table.stack.isEmpty()
-            || nextEnchantment(stack) == null) return InteractionResult.PASS;
+            || nextEnchantment(stack) == null) return InteractionResult.TRY_WITH_EMPTY_HAND;
         if (!level.isClientSide()) {
             table.stack = stack.copyWithCount(1);
             stack.consume(1, player);
