@@ -249,7 +249,7 @@ final class Overchanter extends Block implements EntityBlock, WandInteractable {
         TcRecipes.register(new InfusionRecipe(id, key, result, 4, cost, TcIngredient.item("minecraft:enchanting_table"), components));
         ResearchCategories.addResearch(new BasesResearch(key, Bases.ID,
             new AspectList().add(Aspect.MAGIC, 8).add(Aspect.MIND, 8).add(Aspect.MECHANISM, 8), -12, 4, 3, result)
-            .setParents("INFUSIONENCHANTMENT", "TB.CrystalBlocks", "TB.SMB")
+            .setParents("INFUSION")
             .setPages(ResearchPage.text("tc.research_page." + key + ".1"), ResearchPage.infusion(id)));
     }
 }

@@ -223,6 +223,6 @@ final class EntityDeconstructor extends Block implements EntityBlock {
             .setParents("INFUSION").setPages(ResearchPage.text("tc.research_page." + key + ".1"), ResearchPage.infusion(id)));
         ResearchCategories.addResearch(new BasesResearch(IMPROVEMENTS, Bases.ID,
             new AspectList().add(Aspect.ORDER, 8).add(Aspect.CRYSTAL, 8), 9, -19, 1, result)
-            .setParents(key, "TB.CrystalBlocks").setPages(ResearchPage.text("tc.research_page." + IMPROVEMENTS + ".1")));
+            .setParents(key).setPages(ResearchPage.text("tc.research_page." + IMPROVEMENTS + ".1")));
     }
 }
