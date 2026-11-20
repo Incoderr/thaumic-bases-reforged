@@ -34,13 +34,13 @@ import thaumcraft.research.ResearchPage;
 final class SpreadingCrops {
     private static final ResourceKey<Block> REDLON = ResourceKey.create(Registries.BLOCK, Bases.id("redlon_stem"));
     private static final ResourceKey<Block> ATTACHED_REDLON = ResourceKey.create(Registries.BLOCK, Bases.id("attached_redlon_stem"));
-    private static final ResourceKey<Block> FRUIT = ResourceKey.create(Registries.BLOCK, net.minecraft.resources.Identifier.withDefaultNamespace("redstone_block"));
+    private static final ResourceKey<Block> FRUIT = ResourceKey.create(Registries.BLOCK, net.minecraft.resources.ResourceLocation.withDefaultNamespace("redstone_block"));
     private static final ResourceKey<net.minecraft.world.item.Item> REDLON_SEEDS =
         ResourceKey.create(Registries.ITEM, Bases.id("redlon_seeds"));
     private static final TagKey<Block> FARMLAND = TagKey.create(Registries.BLOCK, Bases.id("redlon_stem_support"));
     private static final TagKey<Block> FRUIT_SOIL = TagKey.create(Registries.BLOCK, Bases.id("redlon_fruit_support"));
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var sweed = blocks.registerBlock("sweed", Sweed::new, p -> plantProperties(p).replaceable());
         items.registerItem("sweed_seeds", p -> new BlockItem(sweed.get(), p));
         var redlon = blocks.registerBlock("redlon_stem", Redlon::new, SpreadingCrops::plantProperties);
@@ -51,7 +51,7 @@ final class SpreadingCrops {
     }
 
     private static BlockBehaviour.Properties plantProperties(BlockBehaviour.Properties properties) {
-        return properties.noCollision().randomTicks().instabreak().sound(SoundType.CROP);
+        return properties.noCollission().randomTicks().instabreak().sound(SoundType.CROP);
     }
 
     static final class Sweed extends CropBlock {
@@ -71,7 +71,7 @@ final class SpreadingCrops {
 
         @Override
         protected ItemLike getBaseSeedId() {
-            return BuiltInRegistries.ITEM.getValue(Bases.id("sweed_seeds"));
+            return BuiltInRegistries.ITEM.get(Bases.id("sweed_seeds"));
         }
 
         @Override
@@ -105,24 +105,21 @@ final class SpreadingCrops {
 
     private static final class AttachedRedlon extends AttachedStemBlock {
         AttachedRedlon(BlockBehaviour.Properties properties) {
-            super(FRUIT, REDLON, REDLON_SEEDS, FARMLAND, properties);
+            super(FRUIT, REDLON, REDLON_SEEDS, properties);
         }
 
         @Override
-        protected BlockState updateShape(BlockState state, net.minecraft.world.level.LevelReader level,
-                                         net.minecraft.world.level.ScheduledTickAccess ticks, BlockPos pos,
-                                         Direction direction, BlockPos neighborPos, BlockState neighbor,
-                                         RandomSource random) {
+        protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
             if (direction == state.getValue(FACING) && !neighbor.is(FRUIT)) {
-                return BuiltInRegistries.BLOCK.getValue(REDLON).defaultBlockState().setValue(StemBlock.AGE, 7);
+                return BuiltInRegistries.BLOCK.get(REDLON).defaultBlockState().setValue(StemBlock.AGE, 7);
             }
-            return super.updateShape(state, level, ticks, pos, direction, neighborPos, neighbor, random);
+            return super.updateShape(state, direction, neighbor, level, pos, neighborPos);
         }
     }
 
     private static final class Redlon extends StemBlock {
         Redlon(BlockBehaviour.Properties properties) {
-            super(FRUIT, ATTACHED_REDLON, REDLON_SEEDS, FARMLAND, FRUIT_SOIL, properties);
+            super(FRUIT, ATTACHED_REDLON, REDLON_SEEDS, properties);
         }
 
         @Override

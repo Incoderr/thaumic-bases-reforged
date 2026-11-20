@@ -61,9 +61,9 @@ final class RosaMysteria {
         }
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var crop = blocks.registerBlock("rosa_mysteria", MysteriaCrop::new,
-            p -> p.noCollision().instabreak().randomTicks().sound(SoundType.CROP));
+            p -> p.noCollission().instabreak().randomTicks().sound(SoundType.CROP));
         items.registerItem(SPROUT, p -> new BlockItem(crop.get(), p));
         for (var fragment : Fragment.values()) items.registerItem(fragment.item(), p -> new FragmentItem(p, fragment));
     }
@@ -77,7 +77,7 @@ final class RosaMysteria {
         }
 
         @Override
-        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
             if (player instanceof ServerPlayer serverPlayer) {
                 switch (fragment) {
                     case MIXED -> {
@@ -88,7 +88,7 @@ final class RosaMysteria {
                 }
                 player.getItemInHand(hand).consume(1, player);
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.InteractionResultHolder.success(player.getItemInHand(hand));
         }
 
         private static void awardTaintedKnowledge(ServerPlayer player) {
@@ -122,7 +122,7 @@ final class RosaMysteria {
         public int getMaxAge() { return 3; }
 
         @Override
-        protected ItemLike getBaseSeedId() { return BuiltInRegistries.ITEM.getValue(Bases.id(SPROUT)); }
+        protected ItemLike getBaseSeedId() { return BuiltInRegistries.ITEM.get(Bases.id(SPROUT)); }
 
         @Override
         protected boolean mayPlaceOn(BlockState soil, BlockGetter level, BlockPos pos) {
@@ -143,7 +143,7 @@ final class RosaMysteria {
             var soil = Fragment.forSoil(params.getLevel().getBlockState(pos.below()));
             var seed = new ItemStack(getBaseSeedId());
             if (isMaxAge(state) && soil != null) {
-                return List.of(seed, new ItemStack(BuiltInRegistries.ITEM.getValue(Bases.id(soil.item()))));
+                return List.of(seed, new ItemStack(BuiltInRegistries.ITEM.get(Bases.id(soil.item()))));
             }
             return List.of(seed);
         }

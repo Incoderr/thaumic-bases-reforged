@@ -1,1 +1,13 @@
-{"result":{"count":1,"id":"thaumicbases:old_bricks"},"ingredients":["minecraft:bricks"],"category":"misc","type":"minecraft:crafting_shapeless"}
+{
+  "result": {
+    "count": 1,
+    "id": "thaumicbases:old_bricks"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:bricks"
+    }
+  ],
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless"
+}

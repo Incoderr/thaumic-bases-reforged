@@ -15,7 +15,7 @@ import thaumcraft.wand.RodUpdates;
 import thaumcraft.wand.WandRegistry;
 
 final class MetalRods {
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         items.registerSimpleItem("thaumium_wand_core");
         items.registerSimpleItem("void_wand_core");
     }

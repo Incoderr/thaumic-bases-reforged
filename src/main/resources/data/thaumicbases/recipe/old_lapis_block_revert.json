@@ -1,1 +1,13 @@
-{"result":{"count":1,"id":"minecraft:lapis_block"},"ingredients":["thaumicbases:old_lapis_block"],"category":"misc","type":"minecraft:crafting_shapeless"}
+{
+  "result": {
+    "count": 1,
+    "id": "minecraft:lapis_block"
+  },
+  "ingredients": [
+    {
+      "item": "thaumicbases:old_lapis_block"
+    }
+  ],
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless"
+}

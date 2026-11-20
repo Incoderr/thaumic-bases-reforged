@@ -3,7 +3,7 @@ loaderVersion="[1,)"
 license="See original Thaumic Bases release"
 [[mods]]
 modId="thaumicbases"
-version="0.1.54-alpha+26.3"
+version="0.1.54-alpha+1.21.1"
 displayName="Thaumic Bases Reforged"
 description="Development port for Thaumcraft 4: Reforged."
 [[dependencies.thaumicbases]]
@@ -15,7 +15,14 @@ side="BOTH"
 [[dependencies.thaumicbases]]
 modId="minecraft"
 type="required"
-versionRange="[26.3]"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.thaumicbases]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.256,)"
 ordering="NONE"
 side="BOTH"
 

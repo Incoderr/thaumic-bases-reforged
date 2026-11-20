@@ -14,10 +14,8 @@ import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -111,23 +109,22 @@ final class MoreAlchemy {
         public int getDropOff(LevelReader level) { return fastLava(level) ? 1 : 2; }
 
         private static boolean fastLava(LevelReader level) {
-            return level.environmentAttributes().getDimensionValue(EnvironmentAttributes.FAST_LAVA);
+            return level.dimensionType().ultraWarm();
         }
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var pyrofluid = blocks.registerBlock("pyrofluid", PyrofluidBlock::new,
-            p -> p.strength(0.6F).noCollision().noOcclusion().randomTicks()
+            p -> p.strength(0.6F).noCollission().noOcclusion().randomTicks()
                 .lightLevel(state -> state.getValue(PyrofluidBlock.AGE) == PyrofluidBlock.MATURE ? 0 : 15));
         pyrofluidBlock = pyrofluid;
         flowingBlock = blocks.registerBlock("flowing_pyrofluid", p -> new LiquidBlock(FLUID.get(), p) {
             @Override
-            protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
-                                        InsideBlockEffectApplier effects, boolean moving) {
-                super.entityInside(state, level, pos, entity, effects, moving);
+            protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+                super.entityInside(state, level, pos, entity);
                 burn(level, entity);
             }
-        }, p -> p.noCollision().noOcclusion().replaceable().noLootTable().lightLevel(state -> 12));
+        }, p -> p.noCollission().noOcclusion().replaceable().noLootTable().lightLevel(state -> 12));
         pyrofluidBucket = items.registerItem(BUCKET, p -> new BucketItem(FLUID.get(), p.stacksTo(1).craftRemainder(Items.BUCKET)));
     }
 
@@ -158,7 +155,7 @@ final class MoreAlchemy {
         }
 
         @Override
-        public ItemStack pickupBlock(LivingEntity user, LevelAccessor level, BlockPos pos, BlockState state) {
+        public ItemStack pickupBlock(Player user, LevelAccessor level, BlockPos pos, BlockState state) {
             if (state.getValue(AGE) == MATURE || !level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL)) {
                 return ItemStack.EMPTY;
             }
@@ -195,8 +192,7 @@ final class MoreAlchemy {
         }
 
         @Override
-        protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
-                                    InsideBlockEffectApplier effects, boolean moving) {
+        protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
             if (state.getValue(AGE) != MATURE) burn(level, entity);
         }
 
@@ -215,7 +211,7 @@ final class MoreAlchemy {
     private static void burn(Level level, Entity entity) {
         if (!(level instanceof ServerLevel server) || entity.fireImmune()) return;
         entity.igniteForSeconds(15);
-        entity.hurtServer(server, level.damageSources().lava(), 4);
+        entity.hurt(level.damageSources().lava(), 4);
     }
 
     static void research() {

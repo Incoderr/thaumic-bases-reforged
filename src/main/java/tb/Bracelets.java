@@ -55,7 +55,7 @@ final class Bracelets {
     static void register() {
         thaumcraft.crafting.ArcaneCrafting.registerDynamic(new BraceletRecap());
         TcStack.registerDataHandler(MODEL_DATA, (stack, variant) -> {
-            stack.set(DataComponents.ITEM_MODEL, Bases.id("bracelet_" + variant));
+            stack.set(DataComponents.CUSTOM_MODEL_DATA, new net.minecraft.world.item.component.CustomModelData(4100 + Variant.valueOf(variant.toUpperCase(java.util.Locale.ROOT)).ordinal()));
             stack.set(DataComponents.CUSTOM_NAME, Component.translatable("item.thaumicbases.bracelet_" + variant));
         });
         for (String cap : List.of("iron", "gold", "thauminite", "thaumium", "void", "copper", "silver")) {

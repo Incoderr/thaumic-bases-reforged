@@ -1,1 +1,13 @@
-{"category":"misc","type":"minecraft:crafting_shapeless","result":{"id":"thaumcraft:quicksilver","count":9},"ingredients":["thaumicbases:quicksilver_block"]}
+{
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "id": "thaumcraft:quicksilver",
+    "count": 9
+  },
+  "ingredients": [
+    {
+      "item": "thaumicbases:quicksilver_block"
+    }
+  ]
+}

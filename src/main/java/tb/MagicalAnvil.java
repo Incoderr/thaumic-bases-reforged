@@ -27,7 +27,14 @@ import thaumcraft.crafting.TcStack;
 import thaumcraft.research.ResearchCategories;
 import thaumcraft.research.ResearchPage;
 
+@net.neoforged.fml.common.EventBusSubscriber(modid = Bases.ID)
 public final class MagicalAnvil extends AnvilBlock implements InfusionStabiliser {
+    @net.neoforged.bus.api.SubscribeEvent
+    static void onRepair(net.neoforged.neoforge.event.entity.player.AnvilRepairEvent event) {
+        if (event.getEntity().containerMenu instanceof Menu menu && !menu.voidMetal) {
+            event.setBreakChance(event.getBreakChance() / 3);
+        }
+    }
     private static final String THAUMIUM = "thaumium_anvil";
     private static final String VOID = "void_anvil";
     private static final String THAUMIUM_RESEARCH = "TB.ThaumicAnvil";
@@ -43,7 +50,7 @@ public final class MagicalAnvil extends AnvilBlock implements InfusionStabiliser
         this.damage = damage;
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         for (String material : List.of(THAUMIUM, VOID)) {
             for (int stage = 0; stage < DAMAGE_PREFIXES.size(); stage++) {
                 int wear = stage;
@@ -67,7 +74,7 @@ public final class MagicalAnvil extends AnvilBlock implements InfusionStabiliser
     }
 
     private BlockState stateAtWear(BlockState state, int stage) {
-        var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(Bases.id(DAMAGE_PREFIXES.get(stage) + material));
+        var block = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(Bases.id(DAMAGE_PREFIXES.get(stage) + material));
         return block.defaultBlockState().setValue(FACING, state.getValue(FACING));
     }
 
@@ -111,12 +118,12 @@ public final class MagicalAnvil extends AnvilBlock implements InfusionStabiliser
         }
 
         @Override
-        protected void createResultInternal() {
-            super.createResultInternal();
+        public void createResult() {
+            super.createResult();
             var result = resultSlots.getItem(0);
             if (!result.isEmpty()) {
                 result.remove(DataComponents.REPAIR_COST);
-                if (voidMetal) setCost(7);
+                if (voidMetal) setMaximumCost(7);
             }
         }
     }

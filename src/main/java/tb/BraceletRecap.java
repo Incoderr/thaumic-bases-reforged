@@ -29,7 +29,7 @@ final class BraceletRecap implements DynamicArcaneRecipe {
         var right = grid.get(RIGHT);
         if (left.isEmpty() || right.isEmpty() || !left.is(right.getItem())) return null;
         for (var cap : WandRegistry.caps()) {
-            if (left.is(BuiltInRegistries.ITEM.getValue(cap.item()))) return cap;
+            if (left.is(BuiltInRegistries.ITEM.get(cap.item()))) return cap;
         }
         return null;
     }

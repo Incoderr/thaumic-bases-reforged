@@ -3,7 +3,7 @@ package tb;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
@@ -13,7 +13,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,8 +45,8 @@ final class DrainFocus extends FocusItem {
 
     DrainFocus(Properties properties) { super(properties); }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
-        blocks.registerBlock(POCKET, Pocket::new, p -> p.noCollision().noOcclusion().noLootTable().strength(-1));
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
+        blocks.registerBlock(POCKET, Pocket::new, p -> p.noCollission().noOcclusion().noLootTable().strength(-1));
         items.registerItem(ID, DrainFocus::new, FocusItem::properties);
     }
 
@@ -55,7 +54,7 @@ final class DrainFocus extends FocusItem {
     public int getFocusColor(ItemStack focus) { return 0x5555FF; }
 
     @Override
-    public Identifier getFocusTexture(ItemStack focus) { return Bases.id("item/focus_drain"); }
+    public ResourceLocation getFocusTexture(ItemStack focus) { return Bases.id("item/focus_drain"); }
 
     @Override
     public AspectList getVisCost(ItemStack focus) { return new AspectList().add(Aspect.WATER, 5); }
@@ -104,7 +103,7 @@ final class DrainFocus extends FocusItem {
         if ((lava || !aquatic) && remaining % 5 != 0) return false;
         var cost = new AspectList().add(Aspect.FIRE, 3);
         if (lava && !caster.consumeAllVis(wand, player, cost, false, false)) return false;
-        var pocket = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getValue(Bases.id(POCKET));
+        var pocket = net.minecraft.core.registries.BuiltInRegistries.BLOCK.get(Bases.id(POCKET));
         if (!level.setBlockAndUpdate(pos, pocket.defaultBlockState())) return false;
         if (lava) caster.consumeAllVis(wand, player, cost, true, false);
         level.scheduleTick(pos, pocket, POCKET_DURATION);
@@ -123,9 +122,7 @@ final class DrainFocus extends FocusItem {
         protected boolean canBeReplaced(BlockState state, BlockPlaceContext context) { return true; }
 
         @Override
-        protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
-                                         BlockPos pos, Direction direction, BlockPos neighborPos,
-                                         BlockState neighbor, RandomSource random) {
+        protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
             return neighbor.isSolid() ? Blocks.AIR.defaultBlockState() : state;
         }
 

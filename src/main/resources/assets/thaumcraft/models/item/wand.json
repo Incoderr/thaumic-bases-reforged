@@ -1,0 +1,93 @@
+{
+  "parent": "minecraft:builtin/entity",
+  "textures": {
+    "particle": "thaumcraft:item/wand_rod_greatwood"
+  },
+  "gui_light": "side",
+  "overrides": [
+    {
+      "predicate": {
+        "custom_model_data": 4100
+      },
+      "model": "thaumicbases:item/bracelet_iron"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4101
+      },
+      "model": "thaumicbases:item/bracelet_gold"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4102
+      },
+      "model": "thaumicbases:item/bracelet_greatwood"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4103
+      },
+      "model": "thaumicbases:item/bracelet_thaumium"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4104
+      },
+      "model": "thaumicbases:item/bracelet_silverwood"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4105
+      },
+      "model": "thaumicbases:item/bracelet_reed"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4106
+      },
+      "model": "thaumicbases:item/bracelet_bone"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4107
+      },
+      "model": "thaumicbases:item/bracelet_obsidian"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4108
+      },
+      "model": "thaumicbases:item/bracelet_blaze"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4109
+      },
+      "model": "thaumicbases:item/bracelet_ice"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4110
+      },
+      "model": "thaumicbases:item/bracelet_quartz"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4111
+      },
+      "model": "thaumicbases:item/bracelet_void"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4112
+      },
+      "model": "thaumicbases:item/bracelet_primal"
+    },
+    {
+      "predicate": {
+        "custom_model_data": 4113
+      },
+      "model": "thaumicbases:item/bracelet_ichor"
+    }
+  ]
+}

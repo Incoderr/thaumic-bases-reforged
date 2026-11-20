@@ -6,10 +6,9 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.WeightedList;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -18,7 +17,6 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.grower.TreeGrower;
-import net.minecraft.world.level.block.sounds.AmbientLeavesBlockSoundPlayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -52,15 +50,14 @@ final class MagicalTrees {
         String log() { return id + "_log"; }
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         for (Tree tree : Tree.values()) {
-            var feature = ResourceKey.create(Registries.FEATURE, Bases.id(tree.id + "_tree"));
-            var grower = new TreeGrower(Bases.ID + ":" + tree.id, WeightedList.of(feature),
-                WeightedList.of(), WeightedList.of(), feature);
+            var feature = ResourceKey.create(Registries.CONFIGURED_FEATURE, Bases.id(tree.id + "_tree"));
+            var grower = new TreeGrower(Bases.ID + ":" + tree.id, java.util.Optional.empty(), java.util.Optional.of(feature), java.util.Optional.empty());
             items.registerSimpleBlockItem(blocks.registerBlock(tree.sapling(), p -> new SaplingBlock(grower, p),
-                p -> p.noCollision().instabreak().randomTicks().sound(SoundType.GRASS)));
+                p -> p.noCollission().instabreak().randomTicks().sound(SoundType.GRASS)));
             items.registerSimpleBlockItem(blocks.registerBlock(tree.leaves(),
-                p -> new LeavesBlock(AmbientLeavesBlockSoundPlayer.noAmbientSound(), p),
+                p -> new LeavesBlock(p),
                 p -> p.strength(0.2F).randomTicks().noOcclusion().sound(SoundType.GRASS)));
             if (tree != Tree.GOLDEN_OAK) {
                 items.registerSimpleBlockItem(blocks.registerBlock(tree.log(), p -> new MagicalLog(tree, p),
@@ -92,19 +89,19 @@ final class MagicalTrees {
                     level.setBlockAndUpdate(target, replacement.defaultBlockState());
                 }
             }
-            if (random.nextInt(8) != 0 || !level.getGameRules().get(net.minecraft.world.level.gamerules.GameRules.SPAWN_MOBS)) return;
+            if (random.nextInt(8) != 0 || !level.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_DOMOBSPAWNING)) return;
             BlockPos spawn = target.above();
             if (!level.isEmptyBlock(spawn) || !level.isEmptyBlock(spawn.above())) return;
             if (!level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class,
                 new net.minecraft.world.phys.AABB(pos).inflate(8)).isEmpty()) return;
             EntityType<?> entity = switch (tree) {
-                case NETHER -> random.nextBoolean() ? EntityTypes.ZOMBIFIED_PIGLIN : EntityTypes.MAGMA_CUBE;
-                case ENDER -> EntityTypes.ENDERMAN;
-                case PEACEFUL -> level.getChunkSource().getGenerator().getMobsAt(level, level.structureManager(), MobCategory.CREATURE, spawn)
-                    .getRandom(random).map(entry -> entry.type()).orElse(null);
+                case NETHER -> random.nextBoolean() ? EntityType.ZOMBIFIED_PIGLIN : EntityType.MAGMA_CUBE;
+                case ENDER -> EntityType.ENDERMAN;
+                case PEACEFUL -> level.getChunkSource().getGenerator().getMobsAt(level.getBiome(spawn), level.structureManager(), MobCategory.CREATURE, spawn)
+                    .getRandom(random).map(entry -> entry.type).orElse(null);
                 default -> null;
             };
-            if (entity != null) entity.spawn(level, spawn, EntitySpawnReason.TRIGGERED);
+            if (entity != null) entity.spawn(level, spawn, MobSpawnType.TRIGGERED);
         }
     }
 

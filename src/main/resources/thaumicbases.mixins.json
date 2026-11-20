@@ -1,1 +1,17 @@
-{"required":true,"minVersion":"0.8","package":"tb.mixin","mixins":["AnvilBlockMixin","AnvilMenuMixin","AlchemicalFurnaceMixin","AlembicMixin"],"injectors":{"defaultRequire":1},"client":["AnvilScreenMixin"]}
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "tb.mixin",
+  "mixins": [
+    "AnvilBlockMixin",
+    "AnvilMenuMixin",
+    "AlchemicalFurnaceMixin",
+    "AlembicMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "AnvilScreenMixin"
+  ]
+}

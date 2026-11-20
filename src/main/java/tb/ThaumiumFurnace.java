@@ -39,14 +39,14 @@ public final class ThaumiumFurnace extends AlchemicalFurnaceBlock {
     private static java.util.function.Supplier<ThaumiumFurnace> block;
     private static final DeferredRegister<BlockEntityType<?>> TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Bases.ID);
     private static final java.util.function.Supplier<BlockEntityType<FurnaceEntity>> TYPE = TYPES.register(NAME,
-        () -> new BlockEntityType<>(FurnaceEntity::new, block.get()));
+        () -> BlockEntityType.Builder.of(FurnaceEntity::new, block.get()).build(null));
 
     private ThaumiumFurnace(Properties properties) {
         super(properties);
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH));
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var furnace = blocks.registerBlock(NAME, ThaumiumFurnace::new,
             p -> p.strength(3.5F).sound(SoundType.STONE).requiresCorrectToolForDrops().lightLevel(AlchemicalFurnaceBlock::lightLevel));
         block = furnace;

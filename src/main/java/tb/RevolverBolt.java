@@ -7,7 +7,7 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -17,9 +17,8 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 final class RevolverBolt extends AbstractArrow {
-    private static final DeferredRegister.Entities ENTITIES = DeferredRegister.createEntities(Bases.ID);
-    static final java.util.function.Supplier<EntityType<RevolverBolt>> TYPE = ENTITIES.registerEntityType("revolver_bolt",
-        RevolverBolt::new, MobCategory.MISC, p -> p.noSave().sized(0.12F, 0.12F).clientTrackingRange(8).updateInterval(1));
+    private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(net.minecraft.core.registries.Registries.ENTITY_TYPE, Bases.ID);
+    static final java.util.function.Supplier<EntityType<RevolverBolt>> TYPE = ENTITIES.register("revolver_bolt", () -> EntityType.Builder.<RevolverBolt>of(RevolverBolt::new, MobCategory.MISC).noSave().sized(0.12F, 0.12F).clientTrackingRange(8).updateInterval(1).build("thaumicbases:revolver_bolt"));
 
     private ItemStack source = ItemStack.EMPTY;
     private double shotDamage = 14.0 / 3.0;

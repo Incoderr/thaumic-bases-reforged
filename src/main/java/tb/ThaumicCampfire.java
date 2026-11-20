@@ -17,7 +17,6 @@ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -29,13 +28,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -60,14 +56,14 @@ final class ThaumicCampfire extends Block implements EntityBlock {
     private static final int TICK_INTERVAL = 10;
     private static final DeferredRegister<BlockEntityType<?>> ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Bases.ID);
     static final BooleanProperty HAS_LOGS = BooleanProperty.create("has_logs");
-    private static final VoxelShape SHAPE = Block.column(15, 0, 2);
-    private static final VoxelShape LOADED_SHAPE = Block.column(15, 0, 10);
-    private static final VoxelShape BRAZIER_SHAPE = Block.column(14, 0, 9);
+    private static final VoxelShape SHAPE = Block.box(8 - (15) / 2.0, 0, 8 - (15) / 2.0, 8 + (15) / 2.0, 2, 8 + (15) / 2.0);
+    private static final VoxelShape LOADED_SHAPE = Block.box(8 - (15) / 2.0, 0, 8 - (15) / 2.0, 8 + (15) / 2.0, 10, 8 + (15) / 2.0);
+    private static final VoxelShape BRAZIER_SHAPE = Block.box(8 - (14) / 2.0, 0, 8 - (14) / 2.0, 8 + (14) / 2.0, 9, 8 + (14) / 2.0);
     private static Supplier<ThaumicCampfire> block;
     private static Supplier<ThaumicCampfire> brazier;
     private final boolean automatic;
     private static final Supplier<BlockEntityType<Fire>> FIRE = ENTITIES.register(ID,
-        () -> new BlockEntityType<>(Fire::new, block.get(), brazier.get()));
+        () -> BlockEntityType.Builder.of(Fire::new, block.get(), brazier.get()).build(null));
 
     ThaumicCampfire(Properties properties, boolean automatic) {
         super(properties);
@@ -75,7 +71,7 @@ final class ThaumicCampfire extends Block implements EntityBlock {
         registerDefaultState(defaultBlockState().setValue(BlockStateProperties.LIT, false).setValue(HAS_LOGS, false));
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var campfire = blocks.registerBlock(ID, p -> new ThaumicCampfire(p, false), p -> p.strength(1.0F)
             .noOcclusion().sound(SoundType.WOOD).lightLevel(s -> s.getValue(BlockStateProperties.LIT) ? 15 : 0));
         items.registerSimpleBlockItem(campfire);
@@ -104,23 +100,23 @@ final class ThaumicCampfire extends Block implements EntityBlock {
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) { return new Fire(pos, state); }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
         if (automatic || !(level.getBlockEntity(pos) instanceof Fire fire)
-            || !(stack.is(ItemTags.LOGS) || stack.has(DataComponents.COOKING_FUEL))) return InteractionResult.PASS;
+            || !(stack.is(ItemTags.LOGS) || stack.getBurnTime(null) > 0)) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (level instanceof ServerLevel server) {
-            if (!fire.add(stack, server)) return InteractionResult.PASS;
-            var remainderTemplate = stack.getCraftingRemainder();
-            var remainder = remainderTemplate == null ? ItemStack.EMPTY : remainderTemplate.create();
+            if (!fire.add(stack, server)) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            var remainderTemplate = stack.getCraftingRemainingItem();
+            var remainder = remainderTemplate == null ? ItemStack.EMPTY : remainderTemplate.copy();
             stack.consume(1, player);
             if (!player.hasInfiniteMaterials() && !remainder.isEmpty() && !player.getInventory().add(remainder)) {
-                player.drop(remainder, false, net.minecraft.util.Prediction.PREDICTED);
+                player.drop(remainder, false);
             }
             fire.setChanged();
             updateModel(level, pos, state, fire);
             if (fire.lit()) level.scheduleTick(pos, this, TICK_INTERVAL);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -196,21 +192,22 @@ final class ThaumicCampfire extends Block implements EntityBlock {
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(getBlockPos()))
                 .withParameter(LootContextParams.TOOL, stack)
                 .create(LootContextParamSets.BLOCK);
-            fuel = ResolvableInt.getFromItem(stack, DataComponents.COOKING_FUEL, CookingFuel::burnTime,
-                new LootContext.Builder(params).create(Optional.empty()), 0);
+            fuel = stack.getBurnTime(null);
             return fuel > 0;
         }
 
         @Override
-        protected void loadAdditional(ValueInput input) {
-            super.loadAdditional(input);
+        protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+            super.loadAdditional(tag, registries);
+            var input = new PortNbt.Input(tag, registries);
             logs = input.getIntOr("logs", 0);
             fuel = input.getIntOr("fuel", 0);
         }
 
         @Override
-        protected void saveAdditional(ValueOutput output) {
-            super.saveAdditional(output);
+        protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+            super.saveAdditional(tag, registries);
+            var output = new PortNbt.Output(tag, registries);
             output.putInt("logs", logs);
             output.putInt("fuel", fuel);
         }

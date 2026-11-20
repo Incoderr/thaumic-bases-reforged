@@ -33,7 +33,7 @@ final class ThauminiteGear {
         Shears(Properties properties) { super(properties); }
     }
 
-    static void items(net.neoforged.neoforge.registries.DeferredRegister.Items items) {
+    static void items(tb.PortRegistration.Items items) {
         items.registerItem("thauminite_axe", Gear::new, p -> Registration.axe(p, TOOL, 5, -3));
         items.registerItem("thauminite_hoe", Gear::new, p -> Registration.hoe(p, TOOL, -2.8F, 0));
         items.registerItem("thauminite_shovel", Gear::new, p -> Registration.shovel(p, TOOL, 1.5F, -3));

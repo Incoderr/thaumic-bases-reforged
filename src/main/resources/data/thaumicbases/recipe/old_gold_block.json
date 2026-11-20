@@ -1,1 +1,13 @@
-{"result":{"count":1,"id":"thaumicbases:old_gold_block"},"ingredients":["minecraft:gold_block"],"category":"misc","type":"minecraft:crafting_shapeless"}
+{
+  "result": {
+    "count": 1,
+    "id": "thaumicbases:old_gold_block"
+  },
+  "ingredients": [
+    {
+      "item": "minecraft:gold_block"
+    }
+  ],
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless"
+}

@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -32,7 +31,7 @@ import thaumcraft.research.ResearchCategories;
 import thaumcraft.research.ResearchPage;
 
 final class ObeliskAndRecycling {
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         items.registerSimpleBlockItem(blocks.registerBlock("crying_obelisk", Obelisk::new,
             p -> p.strength(50, 1200).requiresCorrectToolForDrops()));
     }
@@ -60,12 +59,10 @@ final class ObeliskAndRecycling {
         }
 
         @Override
-        protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks,
-                                         BlockPos pos, Direction direction, BlockPos neighborPos,
-                                         BlockState neighbor, RandomSource random) {
+        protected BlockState updateShape(BlockState state, Direction direction, BlockState neighbor, net.minecraft.world.level.LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
             if (direction == Direction.UP) return state.setValue(ABOVE, neighbor.is(this));
             if (direction == Direction.DOWN) return state.setValue(BELOW, neighbor.is(this));
-            return super.updateShape(state, level, ticks, pos, direction, neighborPos, neighbor, random);
+            return super.updateShape(state, direction, neighbor, level, pos, neighborPos);
         }
 
         @Override
@@ -73,8 +70,7 @@ final class ObeliskAndRecycling {
             if (!state.getValue(ABOVE) && !state.getValue(BELOW)) return InteractionResult.PASS;
             var base = state.getValue(ABOVE) ? pos : pos.below();
             if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.setRespawnPosition(new ServerPlayer.RespawnConfig(
-                    LevelData.RespawnData.of(level.dimension(), base, player.getYRot(), 0), false), true);
+                serverPlayer.setRespawnPosition(level.dimension(), base, player.getYRot(), false, true);
             }
             return InteractionResult.SUCCESS;
         }
@@ -88,7 +84,7 @@ final class ObeliskAndRecycling {
                 var floor = exit.below();
                 if (!level.getBlockState(floor).isFaceSturdy(level, floor, Direction.UP)) continue;
                 if (!level.isEmptyBlock(exit) || !level.isEmptyBlock(exit.above())) continue;
-                return Optional.of(ServerPlayer.RespawnPosAngle.of(Vec3.atBottomCenterOf(exit), pos, angle));
+                return Optional.of(ServerPlayer.RespawnPosAngle.of(Vec3.atBottomCenterOf(exit), pos));
             }
             return Optional.empty();
         }

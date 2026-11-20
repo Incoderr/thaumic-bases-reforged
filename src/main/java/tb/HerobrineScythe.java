@@ -18,12 +18,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jspecify.annotations.Nullable;
+import javax.annotation.Nullable;
 import thaumcraft.aspect.Aspect;
 import thaumcraft.aspect.AspectList;
 import thaumcraft.crafting.InfusionRecipe;
@@ -51,13 +51,13 @@ final class HerobrineScythe extends Item implements Repairable, WarpingGear {
 
     HerobrineScythe(Properties properties) { super(properties); }
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         items.registerItem(ID, HerobrineScythe::new,
-            p -> p.sword(ToolMaterial.DIAMOND, 3, -2.4F).rarity(Rarity.UNCOMMON).attributes(MODIFIERS));
+            p -> p.durability(Tiers.DIAMOND.getUses()).component(net.minecraft.core.component.DataComponents.TOOL, net.minecraft.world.item.SwordItem.createToolProperties()).rarity(Rarity.UNCOMMON).attributes(MODIFIERS));
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+    public void inventoryTick(ItemStack stack, Level level, Entity owner, int slot, boolean selected) {
         SelfRepair.tick(stack, owner);
     }
 
@@ -65,14 +65,14 @@ final class HerobrineScythe extends Item implements Repairable, WarpingGear {
     public int getWarp(ItemStack stack, Player player) { return 3; }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
-        builder.accept(Component.translatable("item.thaumicbases.herobrines_scythe.lore").withStyle(ChatFormatting.ITALIC));
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> builder, TooltipFlag flag) {
+        builder.add(Component.translatable("item.thaumicbases.herobrines_scythe.lore").withStyle(ChatFormatting.ITALIC));
     }
 
     @Override
-    public void postHurtEnemy(ItemStack stack, LivingEntity initial, LivingEntity attacker) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity initial, LivingEntity attacker) {
         if (!(attacker instanceof Player player) || !(initial instanceof Enemy)
-            || !(player.level() instanceof ServerLevel level)) return;
+            || !(player.level() instanceof ServerLevel level)) return true;
         var visited = new HashSet<LivingEntity>();
         visited.add(initial);
         LivingEntity origin = initial;
@@ -83,13 +83,15 @@ final class HerobrineScythe extends Item implements Repairable, WarpingGear {
             if (candidates.isEmpty()) break;
             var target = candidates.get(player.getRandom().nextInt(candidates.size()));
             visited.add(target);
-            if (!target.hurtServer(level, level.damageSources().playerAttack(player), ATTACK)) continue;
+            if (!target.hurt(level.damageSources().playerAttack(player), ATTACK)) continue;
             ModNetwork.sendToNear(level, null, origin.getX(), origin.getY(), origin.getZ(), 64,
                 new ShockZapPayload(origin.getId(), target.getId()));
             level.playSound(null, target.blockPosition(), ModSounds.ZAP.get(), SoundSource.PLAYERS, 1.0F, 0.8F);
             stack.hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
             origin = target;
         }
+
+        return true;
     }
 
     static void research() {

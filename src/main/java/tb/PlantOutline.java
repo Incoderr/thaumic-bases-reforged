@@ -12,10 +12,10 @@ final class PlantOutline {
     static final VoxelShape[] GLIEONIA = stages(4, 4, 4, 7, 7, 13, 13, 13, 13);
     static final VoxelShape[] SWEED = stages(5, 4, 7, 12, 16);
     static final VoxelShape[] ASHROOM = stages(5, 6, 8, 10, 12);
-    static final VoxelShape FLAXIUM = Block.column(8, 0, 14);
+    static final VoxelShape FLAXIUM = Block.box(8 - (8) / 2.0, 0, 8 - (8) / 2.0, 8 + (8) / 2.0, 14, 8 + (8) / 2.0);
 
     private static VoxelShape[] stages(int halfWidth, int... heights) {
-        return Arrays.stream(heights).mapToObj(height -> Block.column(halfWidth * 2, 0, height))
+        return Arrays.stream(heights).mapToObj(height -> Block.box(8 - (halfWidth * 2) / 2.0, 0, 8 - (halfWidth * 2) / 2.0, 8 + (halfWidth * 2) / 2.0, height, 8 + (halfWidth * 2) / 2.0))
             .toArray(VoxelShape[]::new);
     }
 

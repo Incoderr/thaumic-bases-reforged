@@ -1,1 +1,37 @@
-{"category":"misc","type":"minecraft:crafting_shapeless","result":{"id":"thaumicbases:thauminite_ingot","count":1},"ingredients":["thaumicbases:thauminite_nugget","thaumicbases:thauminite_nugget","thaumicbases:thauminite_nugget","thaumicbases:thauminite_nugget","thaumicbases:thauminite_nugget","thaumicbases:thauminite_nugget","thaumicbases:thauminite_nugget","thaumicbases:thauminite_nugget","thaumicbases:thauminite_nugget"]}
+{
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "id": "thaumicbases:thauminite_ingot",
+    "count": 1
+  },
+  "ingredients": [
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    },
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    },
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    },
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    },
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    },
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    },
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    },
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    },
+    {
+      "item": "thaumicbases:thauminite_nugget"
+    }
+  ]
+}

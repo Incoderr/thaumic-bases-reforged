@@ -1,1 +1,21 @@
-{"type":"minecraft:crafting_shaped","result":{"id":"thaumicbases:iron_greatwood","count":5},"key":{"#":"thaumcraft:greatwood_planks","@":"minecraft:iron_nugget"},"pattern":["@#@","###","@#@"],"category":"misc"}
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "id": "thaumicbases:iron_greatwood",
+    "count": 5
+  },
+  "key": {
+    "#": {
+      "item": "thaumcraft:greatwood_planks"
+    },
+    "@": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "pattern": [
+    "@#@",
+    "###",
+    "@#@"
+  ],
+  "category": "misc"
+}

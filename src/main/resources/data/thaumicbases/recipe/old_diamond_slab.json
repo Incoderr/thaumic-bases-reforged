@@ -1,1 +1,16 @@
-{"category":"building","pattern":["###"],"type":"minecraft:crafting_shaped","key":{"#":"thaumicbases:old_diamond_block"},"result":{"id":"thaumicbases:old_diamond_slab","count":3}}
+{
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "thaumicbases:old_diamond_block"
+    }
+  },
+  "result": {
+    "id": "thaumicbases:old_diamond_slab",
+    "count": 3
+  }
+}

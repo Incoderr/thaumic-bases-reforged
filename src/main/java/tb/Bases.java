@@ -3,7 +3,7 @@ package tb;
 import java.util.List;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
@@ -23,8 +23,8 @@ import thaumcraft.research.ResearchPage;
 @Mod(Bases.ID)
 public final class Bases {
     static final String ID = "thaumicbases";
-    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(ID);
-    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ID);
+    private static final PortRegistration.Blocks BLOCKS = new PortRegistration.Blocks(ID);
+    private static final PortRegistration.Items ITEMS = new PortRegistration.Items(ID);
     private static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ID);
     private static final net.neoforged.neoforge.registries.DeferredItem<net.minecraft.world.item.Item> INGOT =
         ITEMS.registerSimpleItem("thauminite_ingot");
@@ -103,8 +103,8 @@ public final class Bases {
         bus.addListener((FMLCommonSetupEvent event) -> event.enqueueWork(Bases::research));
     }
 
-    static Identifier id(String name) {
-        return Identifier.fromNamespaceAndPath(ID, name);
+    static ResourceLocation id(String name) {
+        return ResourceLocation.fromNamespaceAndPath(ID, name);
     }
 
     private static void research() {

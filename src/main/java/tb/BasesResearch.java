@@ -2,7 +2,7 @@ package tb;
 
 import java.util.Arrays;
 import java.util.List;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -57,7 +57,7 @@ final class BasesResearch extends ResearchItem {
         position = position(key, column, row);
     }
 
-    BasesResearch(String key, String category, AspectList tags, int column, int row, int complexity, Identifier icon) {
+    BasesResearch(String key, String category, AspectList tags, int column, int row, int complexity, ResourceLocation icon) {
         super(key, category, tags, column, row, complexity, icon);
         position = position(key, column, row);
     }

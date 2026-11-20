@@ -57,7 +57,7 @@ final class CrystalBuilding {
         }
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         for (Crystal type : Crystal.values()) {
             items.registerSimpleBlockItem(blocks.registerBlock(type.block(), CrystalBlock::new, CrystalBuilding::crystalProperties));
             items.registerSimpleBlockItem(blocks.registerBlock(type.slab(), CrystalSlab::new, CrystalBuilding::crystalProperties));

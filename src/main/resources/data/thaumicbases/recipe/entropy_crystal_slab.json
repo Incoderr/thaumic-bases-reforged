@@ -1,1 +1,16 @@
-{"category":"building","pattern":["###"],"type":"minecraft:crafting_shaped","key":{"#":"thaumicbases:entropy_crystal_block"},"result":{"id":"thaumicbases:entropy_crystal_slab","count":3}}
+{
+  "category": "building",
+  "pattern": [
+    "###"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "#": {
+      "item": "thaumicbases:entropy_crystal_block"
+    }
+  },
+  "result": {
+    "id": "thaumicbases:entropy_crystal_slab",
+    "count": 3
+  }
+}

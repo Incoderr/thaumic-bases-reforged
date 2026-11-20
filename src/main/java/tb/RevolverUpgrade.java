@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -77,7 +77,7 @@ enum RevolverUpgrade {
     private static final List<RevolverUpgrade> DAMAGE = List.of(POWER, SILVER, ARTHROPODS, ELDRITCH_BANE, DUELING, ELDRITCH);
     private static final List<RevolverUpgrade> INFUSED = List.of(KNOWLEDGE, TAINTED, PRIMAL);
     private static final TagKey<net.minecraft.world.entity.EntityType<?>> BOSSES =
-        TagKey.create(Registries.ENTITY_TYPE, net.minecraft.resources.Identifier.parse("c:bosses"));
+        TagKey.create(Registries.ENTITY_TYPE, net.minecraft.resources.ResourceLocation.parse("c:bosses"));
     private final int maxLevel;
     private final int instability;
     private final AspectList cost;
@@ -125,7 +125,7 @@ enum RevolverUpgrade {
             return Math.pow(1.2, SILVER.level(stack));
         if (type.builtInRegistryHolder().is(EntityTypeTags.ARTHROPOD) && ARTHROPODS.level(stack) > 0)
             return Math.pow(1.2, ARTHROPODS.level(stack));
-        if ((target instanceof EldritchMob || type == EntityTypes.ENDERMAN) && ELDRITCH_BANE.level(stack) > 0)
+        if ((target instanceof EldritchMob || type == EntityType.ENDERMAN) && ELDRITCH_BANE.level(stack) > 0)
             return Math.pow(1.2, ELDRITCH_BANE.level(stack));
         if (target instanceof Player && DUELING.level(stack) > 0)
             return Math.pow(1.2, DUELING.level(stack));

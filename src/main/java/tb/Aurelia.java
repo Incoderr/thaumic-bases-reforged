@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.VegetationBlock;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -27,17 +27,18 @@ import thaumcraft.research.ResearchCategories;
 import thaumcraft.research.ResearchPage;
 
 final class Aurelia {
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var fallen = blocks.registerBlock("fallen_aurelia_petal", Petal::new,
-            p -> p.replaceable().noCollision().instabreak().sound(SoundType.GRASS));
+            p -> p.replaceable().noCollission().instabreak().sound(SoundType.GRASS));
         items.registerSimpleBlockItem(blocks.registerBlock("aurelia", p -> new Flower(p, fallen),
-            p -> p.noCollision().instabreak().randomTicks().sound(SoundType.GRASS)));
+            p -> p.noCollission().instabreak().randomTicks().sound(SoundType.GRASS)));
         var petal = items.registerSimpleItem("aurelia_petal");
         AspectSync.addRegistrar(registry -> registry.register(petal.get(), new AspectList().add(Aspect.AURA, 2)));
     }
 
-    private static class Petal extends VegetationBlock {
+    private static class Petal extends BushBlock {
         Petal(Properties properties) { super(properties); }
+        @Override protected com.mojang.serialization.MapCodec<? extends net.minecraft.world.level.block.BushBlock> codec() { return simpleCodec(Petal::new); }
 
         @Override
         protected boolean mayPlaceOn(BlockState soil, BlockGetter level, BlockPos pos) {
@@ -46,7 +47,7 @@ final class Aurelia {
 
         @Override
         protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-            return Block.column(8, 0, 1);
+            return Block.box(8 - (8) / 2.0, 0, 8 - (8) / 2.0, 8 + (8) / 2.0, 1, 8 + (8) / 2.0);
         }
     }
 
@@ -67,14 +68,14 @@ final class Aurelia {
 
         @Override
         protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-            return Block.column(state.getValue(OPEN) ? 12 : 8, 0, 13);
+            return Block.box(8 - (state.getValue(OPEN) ? 12 : 8) / 2.0, 0, 8 - (state.getValue(OPEN) ? 12 : 8) / 2.0, 8 + (state.getValue(OPEN) ? 12 : 8) / 2.0, 13, 8 + (state.getValue(OPEN) ? 12 : 8) / 2.0);
         }
 
         @Override
         protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-            long time = Math.floorMod(level.getOverworldClockTime(), 24000);
+            long time = Math.floorMod(level.getDayTime(), 24000);
             boolean open = level.dimension().equals(Level.OVERWORLD) && time >= 13000 && time < 23000
-                && level.getMoonBrightness(pos) >= 1 && level.canSeeSky(pos.above());
+                && level.getMoonBrightness() >= 1 && level.canSeeSky(pos.above());
             if (state.getValue(OPEN) != open) level.setBlockAndUpdate(pos, state.setValue(OPEN, open));
             if (!open) return;
             var target = pos.offset(random.nextInt(5) - 2, 0, random.nextInt(5) - 2);

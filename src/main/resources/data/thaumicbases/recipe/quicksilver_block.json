@@ -1,1 +1,37 @@
-{"category":"misc","type":"minecraft:crafting_shapeless","result":{"id":"thaumicbases:quicksilver_block","count":1},"ingredients":["thaumcraft:quicksilver","thaumcraft:quicksilver","thaumcraft:quicksilver","thaumcraft:quicksilver","thaumcraft:quicksilver","thaumcraft:quicksilver","thaumcraft:quicksilver","thaumcraft:quicksilver","thaumcraft:quicksilver"]}
+{
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "id": "thaumicbases:quicksilver_block",
+    "count": 1
+  },
+  "ingredients": [
+    {
+      "item": "thaumcraft:quicksilver"
+    },
+    {
+      "item": "thaumcraft:quicksilver"
+    },
+    {
+      "item": "thaumcraft:quicksilver"
+    },
+    {
+      "item": "thaumcraft:quicksilver"
+    },
+    {
+      "item": "thaumcraft:quicksilver"
+    },
+    {
+      "item": "thaumcraft:quicksilver"
+    },
+    {
+      "item": "thaumcraft:quicksilver"
+    },
+    {
+      "item": "thaumcraft:quicksilver"
+    },
+    {
+      "item": "thaumcraft:quicksilver"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,7 +20,7 @@ final class RevolverMenu extends AbstractContainerMenu {
     RevolverMenu(int id, Inventory inventory, ItemStack revolver) {
         super(Revolver.MENU.get(), id);
         this.revolver = revolver;
-        selected = inventory.getSelectedSlot();
+        selected = inventory.selected;
 
         var chamber = new SimpleContainer(1) {
             @Override
@@ -37,7 +37,9 @@ final class RevolverMenu extends AbstractContainerMenu {
             @Override
             public int getMaxStackSize() { return 1; }
         });
-        addStandardInventorySlots(inventory, 8, 84);
+        for (int row = 0; row < 3; row++) for (int col = 0; col < 9; col++)
+            addSlot(new Slot(inventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+        for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, 142));
     }
 
     int selected() { return selected; }
@@ -48,9 +50,9 @@ final class RevolverMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public void clicked(int slot, int button, ContainerInput input, Player player) {
+    public void clicked(int slot, int button, ClickType input, Player player) {
         if (!stillValid(player) || slot == HOTBAR_START + selected
-            || (input == ContainerInput.SWAP && button == selected)) return;
+            || (input == ClickType.SWAP && button == selected)) return;
         super.clicked(slot, button, input, player);
     }
 

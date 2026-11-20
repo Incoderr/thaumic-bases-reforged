@@ -35,13 +35,13 @@ final class BloodyRobes {
     private static final TcArmorMaterial MATERIAL = new TcArmorMaterial(21, 2, 6, 5, 2, 21,
         SoundEvents.ARMOR_EQUIP_LEATHER, 0, 0, REPAIR, Bases.id("bloody_robes"));
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         piece(items, "bloody_chestplate", ArmorSlot.CHESTPLATE, EquipmentSlotGroup.CHEST, 6, 4, Attributes.MAX_HEALTH, 0.2);
         piece(items, "bloody_leggings", ArmorSlot.LEGGINGS, EquipmentSlotGroup.LEGS, 5, 3, Attributes.ATTACK_KNOCKBACK, 0.5);
         piece(items, "bloody_boots", ArmorSlot.BOOTS, EquipmentSlotGroup.FEET, 2, 2, Attributes.MOVEMENT_SPEED, 0.1);
     }
 
-    private static void piece(DeferredRegister.Items items, String id, ArmorSlot armorSlot, EquipmentSlotGroup group,
+    private static void piece(PortRegistration.Items items, String id, ArmorSlot armorSlot, EquipmentSlotGroup group,
                               int armor, int discount, Holder<Attribute> attribute, double bonus) {
         items.registerItem(id, p -> new Robe(p, discount), p -> Registration.armor(p, MATERIAL, armorSlot)
             .component(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.builder()

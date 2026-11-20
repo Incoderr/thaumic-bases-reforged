@@ -1,1 +1,13 @@
-{"result":{"count":1,"id":"minecraft:diamond_block"},"ingredients":["thaumicbases:old_diamond_block"],"category":"misc","type":"minecraft:crafting_shapeless"}
+{
+  "result": {
+    "count": 1,
+    "id": "minecraft:diamond_block"
+  },
+  "ingredients": [
+    {
+      "item": "thaumicbases:old_diamond_block"
+    }
+  ],
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless"
+}

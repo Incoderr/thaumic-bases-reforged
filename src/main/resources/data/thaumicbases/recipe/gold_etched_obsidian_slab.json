@@ -1,1 +1,16 @@
-{"type":"minecraft:crafting_shaped","result":{"id":"thaumicbases:gold_etched_obsidian_slab","count":3},"key":{"#":"thaumicbases:gold_etched_obsidian"},"pattern":["###"],"category":"misc"}
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "id": "thaumicbases:gold_etched_obsidian_slab",
+    "count": 3
+  },
+  "key": {
+    "#": {
+      "item": "thaumicbases:gold_etched_obsidian"
+    }
+  },
+  "pattern": [
+    "###"
+  ],
+  "category": "misc"
+}

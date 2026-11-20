@@ -1,1 +1,13 @@
-{"result":{"id":"thaumcraft:salis_mundus","count":9},"category":"misc","type":"minecraft:crafting_shapeless","ingredients":["thaumicbases:salis_mundus_block"]}
+{
+  "result": {
+    "id": "thaumcraft:salis_mundus",
+    "count": 9
+  },
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "thaumicbases:salis_mundus_block"
+    }
+  ]
+}

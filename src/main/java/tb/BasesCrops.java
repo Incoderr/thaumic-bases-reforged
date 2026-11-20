@@ -10,7 +10,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.BonemealSource;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -32,17 +31,17 @@ import thaumcraft.research.ResearchPage;
 final class BasesCrops {
     private static final String SALT = "salis_mundus_block";
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var salt = blocks.registerSimpleBlock(SALT, properties -> properties.strength(0.5F).sound(SoundType.SAND));
         items.registerSimpleBlockItem(salt);
         for (String name : new String[] {"plax", "metalleat", "lucrite", "lazullia", "glieonia", "tobacco", "void_plant"}) {
             var seedId = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.ITEM,
                 Bases.id(name + "_seeds"));
             var plant = blocks.registerBlock(name, properties -> new Plant(properties,
-                () -> net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(seedId),
+                () -> net.minecraft.core.registries.BuiltInRegistries.ITEM.get(seedId),
                 name.equals("lucrite") ? salt : null, name.equals("glieonia"),
                 name.equals("lucrite") || name.equals("lazullia") || name.equals("tobacco") || name.equals("void_plant"), outline(name)),
-                properties -> properties.noCollision().randomTicks().instabreak().sound(SoundType.CROP));
+                properties -> properties.noCollission().randomTicks().instabreak().sound(SoundType.CROP));
             items.registerItem(name + "_seeds", properties -> new net.minecraft.world.item.BlockItem(plant.get(), properties));
 
         }
@@ -107,8 +106,8 @@ final class BasesCrops {
         }
 
         @Override
-        public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, BonemealSource source) {
-            return hasGrowthSubstrate(level, pos) && super.isValidBonemealTarget(level, pos, state, source);
+        public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+            return hasGrowthSubstrate(level, pos) && super.isValidBonemealTarget(level, pos, state);
         }
 
         @Override

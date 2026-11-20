@@ -9,10 +9,9 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import thaumcraft.aspect.Aspect;
@@ -29,7 +28,7 @@ import thaumcraft.research.ResearchPage;
 final class Tobacco {
     private static final String RESEARCH = "TB.Tobacco";
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         items.registerSimpleItem("tobacco_leaves");
         TobaccoBlend.register(items);
         items.registerItem("mortar", Mortar::new, p -> p.durability(256));
@@ -43,13 +42,13 @@ final class Tobacco {
         }
 
         @Override
-        public ItemStackTemplate getCraftingRemainder(ItemInstance item) {
-            var stack = item instanceof ItemStack original ? original : new ItemStack(this);
+        public ItemStack getCraftingRemainingItem(ItemStack item) {
+            var stack = item;
             int damage = stack.getDamageValue() + 1;
-            if (damage >= stack.getMaxDamage()) return null;
+            if (damage >= stack.getMaxDamage()) return ItemStack.EMPTY;
             var remainder = stack.copyWithCount(1);
             remainder.setDamageValue(damage);
-            return ItemStackTemplate.fromNonEmptyStack(remainder);
+            return remainder;
         }
     }
 
@@ -62,7 +61,7 @@ final class Tobacco {
         }
 
         private static ItemStack tobacco(Player player) {
-            for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
+            for (ItemStack stack : player.getInventory().items) {
                 if (stack.getItem() instanceof TobaccoBlend.BlendItem) return stack;
             }
             var offhand = player.getOffhandItem();
@@ -70,10 +69,10 @@ final class Tobacco {
         }
 
         @Override
-        public InteractionResult use(Level level, Player player, InteractionHand hand) {
-            if (tobacco(player).isEmpty()) return InteractionResult.PASS;
+        public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+            if (tobacco(player).isEmpty()) return net.minecraft.world.InteractionResultHolder.pass(player.getItemInHand(hand));
             player.startUsingItem(hand);
-            return InteractionResult.CONSUME;
+            return net.minecraft.world.InteractionResultHolder.consume(player.getItemInHand(hand));
         }
 
         @Override
@@ -82,8 +81,8 @@ final class Tobacco {
         }
 
         @Override
-        public ItemUseAnimation getUseAnimation(ItemStack stack) {
-            return ItemUseAnimation.TOOT_HORN;
+        public UseAnim getUseAnimation(ItemStack stack) {
+            return UseAnim.TOOT_HORN;
         }
 
         @Override

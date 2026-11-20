@@ -1,1 +1,13 @@
-{"result":{"count":9,"id":"thaumcraft:void_metal_ingot"},"ingredients":["thaumicbases:void_metal_block"],"category":"misc","type":"minecraft:crafting_shapeless"}
+{
+  "result": {
+    "count": 9,
+    "id": "thaumcraft:void_metal_ingot"
+  },
+  "ingredients": [
+    {
+      "item": "thaumicbases:void_metal_block"
+    }
+  ],
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless"
+}

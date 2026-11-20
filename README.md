@@ -1,8 +1,8 @@
-# Thaumic Bases Reforged v0.1.54-alpha · Minecraft 26.3
+# Thaumic Bases Reforged v0.1.54-alpha · Minecraft 1.21.1
 
 ## Русский
 
-Первый публичный альфа-релиз порта **Thaumic Bases** для **Thaumcraft 4: Reforged**.
+Экспериментальный обратный перенос нашей версии 0.1.54-alpha+26.3 на 1.21.1. Запуск проверен на клиенте и выделенном сервере; пользователь подтвердил работу в отдельном профиле 1.21.1. Полная проверка всех механик ещё продолжается. Основа — порт **Thaumic Bases** для **Thaumcraft 4: Reforged**.
 
 - Магические растения, декоративные блоки, шипы и пирожидкость.
 - Браслеты с поддержкой набалдашников. Ихоровый браслет — неофициальное дополнение этого порта, доступное при установленном Thaumic Tinkerer.
@@ -12,7 +12,7 @@
 
 ## English
 
-The first public alpha of **Thaumic Bases** for **Thaumcraft 4: Reforged**.
+Experimental 1.21.1 backport of our 0.1.54-alpha+26.3 release. Client and dedicated-server startup have been tested, and the user confirmed it works in a separate 1.21.1 profile. Full gameplay validation is still ongoing. Based on **Thaumic Bases** for **Thaumcraft 4: Reforged**.
 
 - Magical plants, decorative blocks, spikes, and Pyrofluid.
 - Bracelets with wand focus support. The Ichor Bracelet is an unofficial addition made for this port and is available when Thaumic Tinkerer is installed.
@@ -22,13 +22,14 @@ The first public alpha of **Thaumic Bases** for **Thaumcraft 4: Reforged**.
 
 ## Установка / Installation
 
-Поместите JAR из раздела **Assets** на [странице релиза](https://github.com/Justevian/thaumic-bases-reforged/releases) в папку `mods`.  
-Place the JAR from **Assets** on the [release page](https://github.com/Justevian/thaumic-bases-reforged/releases) in your `mods` folder.
+Скачайте JAR из [релиза для 1.21.1](https://github.com/Justevian/thaumic-bases-reforged/releases/tag/v0.1.54-alpha%2B1.21.1) и поместите его в папку `mods` профиля 1.21.1.
+Download the JAR from the [1.21.1 release](https://github.com/Justevian/thaumic-bases-reforged/releases/tag/v0.1.54-alpha%2B1.21.1) and place it in your 1.21.1 profile’s `mods` folder.
 
-- Minecraft **26.3**
-- NeoForge **26.3.0.102**
+- Minecraft **1.21.1**
+- NeoForge **21.1.256+** (также проверен запуск на / also launched on **21.1.267**)
 - Thaumcraft 4: Reforged **1.1.3**
-- TerraBlender **26.3-26.3.0.0.9**
+- TerraBlender **1.21.1-4.1.0.1**
+- Curios **9.5.1+1.21.1** (зависимость ядра / core dependency)
 
 Thaumic Tinkerer нужен только для ихорового браслета.  
 Thaumic Tinkerer is only required for the Ichor Bracelet.
@@ -39,8 +40,27 @@ Thaumic Tinkerer is only required for the Ichor Bracelet.
 - **Azanor** — оригинальный Thaumcraft / original Thaumcraft
 - **overseas (notlikethiss)** — [Thaumcraft 4: Reforged](https://github.com/notlikethiss/thaumcraft-4-reforged)
 
-## Сборка / Building
+## Сборка и проверка / Building and testing
 
-Для сборки нужен JDK 25. Поместите `thaumcraft-4-reforged-1.1.3-26.3.jar` в папку `libs` и запустите `gradlew.bat build`.
+Нужен JDK 21. Положите в `libs` следующие официальные файлы (не входят в архив исходников):
+JDK 21 is required. Place these official dependencies in `libs` (not included in the source archive):
 
-Build with JDK 25. Place `thaumcraft-4-reforged-1.1.3-26.3.jar` in `libs`, then run `gradlew.bat build` on Windows or `./gradlew build` on Linux.
+- `thaumcraft-4-reforged-1.1.3-1.21.1.jar` — [official core release](https://github.com/notlikethiss/thaumcraft-4-reforged/releases/tag/1.21.1)
+- `TerraBlender-neoforge-1.21.1-4.1.0.1.jar` — [TerraBlender](https://modrinth.com/mod/terrablender/versions)
+- `curios-neoforge-9.5.1+1.21.1.jar` — [Curios](https://modrinth.com/mod/curios/versions)
+
+```shell
+./gradlew build
+./gradlew runServer -PportSmoke=true
+./gradlew runClient -PclientSmoke=true
+```
+
+В Windows используйте `gradlew.bat`. Для тестового сервера сначала примите EULA в `run/eula.txt`.
+On Windows use `gradlew.bat`. Accept the Minecraft EULA in `run/eula.txt` before running server checks.
+
+Проверки запускаются в отдельном каталоге `run` и не входят в выпускаемый JAR. Сервер проверяет загрузку рецептов, данные браслетов и сохранение блочных сущностей; клиент — модели предметов и выбор моделей браслетов. Тестовые запуски автоматически завершаются. Для обычного запуска не передавайте флаги `portSmoke`/`clientSmoke`.
+
+Checks use the isolated `run` directory and are excluded from the release JAR. Server checks cover recipe loading, bracelet data and block entity persistence; client checks cover item models and bracelet model selection. Test runs stop automatically. Omit the smoke flags for regular development runs.
+
+Не проверены: полное прохождение исследований и всех механик, внешний вид браслетов на руке и совместимость с большой сборкой. Перенос миров с 26.3 на 1.21.1 не поддерживается.
+Full research/gameplay progression, first-person bracelet appearance and large modpack compatibility still require manual testing. Downgrading 26.3 worlds is unsupported.

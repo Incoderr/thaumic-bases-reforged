@@ -2,7 +2,7 @@ package tb;
 
 import java.util.List;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
@@ -50,7 +50,7 @@ final class FluxFocus extends FocusItem {
         return new FocusUpgradeType(id, "tb_" + name, Bases.id("textures/foci/" + texture + ".png"), cost);
     }
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         items.registerItem(ID, FluxFocus::new, FocusItem::properties);
     }
 
@@ -58,7 +58,7 @@ final class FluxFocus extends FocusItem {
     public int getFocusColor(ItemStack stack) { return 6567837; }
 
     @Override
-    public Identifier getFocusTexture(ItemStack stack) { return Bases.id("item/" + ID); }
+    public ResourceLocation getFocusTexture(ItemStack stack) { return Bases.id("item/" + ID); }
 
     @Override
     public AspectList getVisCost(ItemStack stack) { return new AspectList().add(Aspect.ORDER, 5); }
@@ -115,7 +115,7 @@ final class FluxFocus extends FocusItem {
     }
 
     boolean clean(ServerPlayer player, ItemStack focus, BlockPos pos) {
-        ServerLevel level = player.level();
+        ServerLevel level = (ServerLevel) player.level();
         if (!level.mayInteract(player, pos) || !isFlux(level.getBlockState(pos)) || !level.removeBlock(pos, false)) return false;
         var random = level.getRandom();
         if (isUpgradedWith(focus, WARPING)) {

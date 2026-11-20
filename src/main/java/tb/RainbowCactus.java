@@ -6,10 +6,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.level.Level;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.CactusBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -35,14 +34,13 @@ final class RainbowCactus extends CactusBlock {
         super(properties);
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         items.registerSimpleBlockItem(blocks.registerBlock(ID, RainbowCactus::new,
             p -> p.strength(0.4F).randomTicks().noOcclusion().sound(SoundType.WOOL)));
     }
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
-                                InsideBlockEffectApplier effects, boolean moving) {}
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {}
 
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
@@ -69,7 +67,7 @@ final class RainbowCactus extends CactusBlock {
         var drops = new ArrayList<ItemStack>();
         for (int i = 0; i < 3 + random.nextInt(8); i++) {
             String color = DYES.get(random.nextInt(DYES.size()));
-            drops.add(new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.withDefaultNamespace(color + "_dye"))));
+            drops.add(new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace(color + "_dye"))));
         }
         return drops;
     }

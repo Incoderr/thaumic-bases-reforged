@@ -45,7 +45,7 @@ final class ThaumicRelocator extends Block implements EntityBlock, WandInteracta
     private static java.util.function.Supplier<ThaumicRelocator> puller;
     private static final DeferredRegister<BlockEntityType<?>> TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Bases.ID);
     private static final java.util.function.Supplier<BlockEntityType<RelocatorEntity>> TYPE = TYPES.register("relocator",
-        () -> new BlockEntityType<>(RelocatorEntity::new, pusher.get(), puller.get()));
+        () -> BlockEntityType.Builder.of(RelocatorEntity::new, pusher.get(), puller.get()).build(null));
 
     private final boolean pulls;
 
@@ -55,7 +55,7 @@ final class ThaumicRelocator extends Block implements EntityBlock, WandInteracta
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.UP));
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var push = blocks.registerBlock(PUSHER, p -> new ThaumicRelocator(p, false), p -> p.strength(2.5F, 15).sound(SoundType.WOOD));
         var pull = blocks.registerBlock(PULLER, p -> new ThaumicRelocator(p, true), p -> p.strength(2.5F, 15).sound(SoundType.WOOD));
         pusher = push;
@@ -118,7 +118,7 @@ final class ThaumicRelocator extends Block implements EntityBlock, WandInteracta
             BlockPos next = pos.relative(direction, distance + 1);
             if (!level.isLoaded(next)) break;
             BlockState obstruction = level.getBlockState(next);
-            if (obstruction.getBlock() instanceof ThaumicRelocator || obstruction.isSolidRender()) break;
+            if (obstruction.getBlock() instanceof ThaumicRelocator || obstruction.isSolidRender(level, next)) break;
             distance++;
         }
         return distance;
@@ -134,7 +134,7 @@ final class ThaumicRelocator extends Block implements EntityBlock, WandInteracta
         Vec3 force = new Vec3(direction.getStepX(), direction.getStepY(), direction.getStepZ());
         for (Entity entity : level.getEntitiesOfClass(Entity.class, beam, e -> e.isAlive() && !e.isSpectator() && !e.isPassenger()
             && (e.isPushable() || e instanceof net.minecraft.world.entity.item.ItemEntity
-                || e instanceof net.minecraft.world.entity.animal.equine.AbstractHorse))) {
+                || e instanceof net.minecraft.world.entity.animal.horse.AbstractHorse))) {
             Vec3 velocity = entity.getDeltaMovement();
             double speed = velocity.dot(force);
             if (entity.isShiftKeyDown()) {

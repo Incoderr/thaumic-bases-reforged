@@ -1,12 +1,9 @@
 package tb.mixin;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -16,7 +13,7 @@ import tb.MagicalAnvil;
 
 @Mixin(AnvilMenu.class)
 abstract class AnvilMenuMixin {
-    @ModifyConstant(method = "createResultInternal", constant = {
+    @ModifyConstant(method = "createResult", constant = {
         @Constant(intValue = 40, ordinal = 1), @Constant(intValue = 40, ordinal = 2)
     }, require = 2)
     private int thaumicbases$costLimit(int vanilla) {
@@ -24,21 +21,16 @@ abstract class AnvilMenuMixin {
             ? menu.exclusiveCostLimit() : vanilla;
     }
 
-    @ModifyConstant(method = "createResultInternal", constant = @Constant(intValue = 39))
+    @ModifyConstant(method = "createResult", constant = @Constant(intValue = 39))
     private int thaumicbases$renameLimit(int vanilla) {
         return thaumicbases$costLimit(vanilla + 1) - 1;
     }
 
-    @Redirect(method = "createResultInternal", at = @At(value = "INVOKE",
+    @Redirect(method = "createResult", at = @At(value = "INVOKE",
         target = "Lnet/minecraft/world/item/ItemStack;getOrDefault(Lnet/minecraft/core/component/DataComponentType;Ljava/lang/Object;)Ljava/lang/Object;"))
     private <T> T thaumicbases$repairPenalty(ItemStack stack, DataComponentType<T> component, T fallback) {
         return (Object) this instanceof MagicalAnvil.Menu && component.equals(DataComponents.REPAIR_COST)
             ? fallback : stack.getOrDefault(component, fallback);
     }
 
-    @ModifyConstant(method = "lambda$onTake$0", constant = @Constant(floatValue = 0.12F))
-    private static float thaumicbases$wearChance(float vanilla, Player player, Level level, BlockPos pos) {
-        return level.getBlockState(pos).getBlock() instanceof MagicalAnvil anvil && !anvil.isVoid()
-            ? vanilla / 3 : vanilla;
-    }
 }

@@ -1,1 +1,13 @@
-{"result":{"count":1,"id":"minecraft:gravel"},"ingredients":["thaumicbases:old_gravel"],"category":"misc","type":"minecraft:crafting_shapeless"}
+{
+  "result": {
+    "count": 1,
+    "id": "minecraft:gravel"
+  },
+  "ingredients": [
+    {
+      "item": "thaumicbases:old_gravel"
+    }
+  ],
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless"
+}

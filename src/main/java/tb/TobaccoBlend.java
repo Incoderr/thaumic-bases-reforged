@@ -7,7 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import thaumcraft.aspect.Aspect;
@@ -53,7 +53,7 @@ enum TobaccoBlend {
         }
     }
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         for (var blend : values()) {
             items.registerItem(blend.name, p -> new BlendItem(p, blend));
         }
@@ -66,11 +66,11 @@ enum TobaccoBlend {
                 if (random.nextFloat() < (silverwood ? 0.3F : 0.1F)) clearWarp(player);
             }
             case ANGRY -> {
-                effect(player, MobEffects.STRENGTH, 8000, silverwood ? 1 : 0);
+                effect(player, MobEffects.DAMAGE_BOOST, 8000, silverwood ? 1 : 0);
                 if (!silverwood && random.nextFloat() < 0.1F) effect(player, MobEffects.WEAKNESS, 8000, 0);
             }
             case MINING -> {
-                effect(player, MobEffects.HASTE, 8000, silverwood ? 1 : 0);
+                effect(player, MobEffects.DIG_SPEED, 8000, silverwood ? 1 : 0);
                 if (!silverwood && random.nextFloat() < 0.3F) effect(player, MobEffects.HUNGER, 8000, 0);
             }
             case WISDOM -> {
@@ -101,7 +101,7 @@ enum TobaccoBlend {
             }
             case WISPY -> {
                 var level = player.level();
-                var wisp = ModEntities.WISP.get().create(level, EntitySpawnReason.TRIGGERED);
+                var wisp = ModEntities.WISP.get().create(level);
                 if (wisp != null) {
                     var primals = Aspect.getPrimalAspects();
                     wisp.setAspect(primals.get(random.nextInt(primals.size())));

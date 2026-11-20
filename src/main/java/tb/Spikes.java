@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -54,17 +53,17 @@ final class Spikes {
 
     private static net.neoforged.neoforge.registries.DeferredItem<net.minecraft.world.item.Item> blood;
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         blood = items.registerSimpleItem("bloody_cloth");
         for (var kind : Kind.values()) {
             items.registerSimpleBlockItem(blocks.registerBlock(kind.id, p -> new Spike(p, kind),
-                p -> p.strength(1.5F).noCollision().sound(net.minecraft.world.level.block.SoundType.METAL)));
+                p -> p.strength(1.5F).noCollission().sound(net.minecraft.world.level.block.SoundType.METAL)));
         }
     }
 
     static final class Spike extends Block {
         static final BooleanProperty BLOODY = BooleanProperty.create("bloody");
-        private static final VoxelShape SHAPE = Block.column(14, 0, 15);
+        private static final VoxelShape SHAPE = Block.box(8 - (14) / 2.0, 0, 8 - (14) / 2.0, 8 + (14) / 2.0, 15, 8 + (14) / 2.0);
         private final Kind kind;
 
         Spike(Properties props, Kind kind) {
@@ -84,32 +83,31 @@ final class Spikes {
         }
 
         @Override
-        protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity,
-                                    InsideBlockEffectApplier effects, boolean moving) {
+        protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
             if (!(level instanceof ServerLevel server) || !(entity instanceof LivingEntity living) || !living.isAlive()) return;
             if (kind == Kind.THAUMIC && level.hasNeighborSignal(pos)) return;
             if (kind == Kind.VOID && living instanceof Player) return;
             var damage = kind == Kind.VOID
                 ? level.damageSources().playerAttack(FakePlayerFactory.get(server, PROFILE))
                 : level.damageSources().cactus();
-            if (living.hurtServer(server, damage, kind.damage) && !living.isAlive() && !state.getValue(BLOODY)) {
+            if (living.hurt(damage, kind.damage) && !living.isAlive() && !state.getValue(BLOODY)) {
                 level.setBlockAndUpdate(pos, state.setValue(BLOODY, true));
             }
         }
 
         @Override
-        protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+        protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
             if (!state.getValue(BLOODY) || !stack.is(ModItems.ENCHANTED_FABRIC.get())) {
-                return InteractionResult.TRY_WITH_EMPTY_HAND;
+                return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
             if (!level.isClientSide()) {
                 stack.consume(1, player);
                 var collected = new ItemStack(blood.get());
-                if (!player.addItem(collected)) player.drop(collected, false, net.minecraft.util.Prediction.PREDICTED);
+                if (!player.addItem(collected)) player.drop(collected, false);
                 level.setBlockAndUpdate(pos, state.setValue(BLOODY, false));
             }
-            return InteractionResult.SUCCESS;
+            return net.minecraft.world.ItemInteractionResult.SUCCESS;
         }
     }
 

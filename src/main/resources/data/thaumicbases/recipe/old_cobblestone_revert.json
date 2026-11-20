@@ -1,1 +1,13 @@
-{"result":{"count":1,"id":"minecraft:cobblestone"},"ingredients":["thaumicbases:old_cobblestone"],"category":"misc","type":"minecraft:crafting_shapeless"}
+{
+  "result": {
+    "count": 1,
+    "id": "minecraft:cobblestone"
+  },
+  "ingredients": [
+    {
+      "item": "thaumicbases:old_cobblestone"
+    }
+  ],
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless"
+}

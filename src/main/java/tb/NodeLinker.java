@@ -19,8 +19,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -36,20 +34,20 @@ import thaumcraft.research.ResearchCategories;
 import thaumcraft.research.ResearchPage;
 import thaumcraft.wand.WandInteractable;
 
-final class NodeLinker extends Block implements EntityBlock, WandInteractable {
+final class NodeLinker extends PortEntityBlock implements EntityBlock, WandInteractable {
     private static final int RANGE = 32;
     private static final String NAME = "node_linker";
     private static java.util.function.Supplier<NodeLinker> block;
     private static final DeferredRegister<BlockEntityType<?>> TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Bases.ID);
     private static final java.util.function.Supplier<BlockEntityType<Link>> TYPE = TYPES.register(NAME,
-        () -> new BlockEntityType<>(Link::new, block.get()));
+        () -> BlockEntityType.Builder.of(Link::new, block.get()).build(null));
     private static final DeferredRegister<DataComponentType<?>> COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, Bases.ID);
     private static final java.util.function.Supplier<DataComponentType<GlobalPos>> RECEIVER = COMPONENTS.register("node_link_receiver",
         () -> DataComponentType.<GlobalPos>builder().persistent(GlobalPos.CODEC).networkSynchronized(GlobalPos.STREAM_CODEC).build());
 
     private NodeLinker(Properties properties) { super(properties); }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var linker = blocks.registerBlock(NAME, NodeLinker::new, p -> p.strength(3, 15).noOcclusion());
         block = linker;
         items.registerSimpleBlockItem(linker);
@@ -107,7 +105,7 @@ final class NodeLinker extends Block implements EntityBlock, WandInteractable {
             && level.getBlockEntity(below) instanceof NodeBlockEntity aura ? aura : null;
     }
 
-    static final class Link extends BlockEntity {
+    static final class Link extends BlockEntity implements PortEntityBlock.Removal {
         private BlockPos partner;
         private boolean transmitter;
         private int instability;
@@ -193,22 +191,23 @@ final class NodeLinker extends Block implements EntityBlock, WandInteractable {
         }
 
         @Override
-        public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        public void onBlockRemoved(BlockPos pos, BlockState state) {
             if (getLevel() instanceof ServerLevel server) disconnect(server);
-            super.preRemoveSideEffects(pos, state);
         }
 
         @Override
-        protected void saveAdditional(ValueOutput output) {
-            super.saveAdditional(output);
+        protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+            super.saveAdditional(tag, registries);
+            var output = new PortNbt.Output(tag, registries);
             if (partner != null) output.store("partner", BlockPos.CODEC, partner);
             output.putBoolean("transmitter", transmitter);
             output.putInt("instability", instability);
         }
 
         @Override
-        protected void loadAdditional(ValueInput input) {
-            super.loadAdditional(input);
+        protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+            super.loadAdditional(tag, registries);
+            var input = new PortNbt.Input(tag, registries);
             partner = input.read("partner", BlockPos.CODEC).orElse(null);
             transmitter = input.getBooleanOr("transmitter", false);
             instability = Math.clamp(input.getIntOr("instability", 0), 0, 1000);

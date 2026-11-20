@@ -1,1 +1,13 @@
-{"category":"misc","type":"minecraft:crafting_shapeless","result":{"id":"thaumicbases:thauminite_nugget","count":9},"ingredients":["thaumicbases:thauminite_ingot"]}
+{
+  "category": "misc",
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "id": "thaumicbases:thauminite_nugget",
+    "count": 9
+  },
+  "ingredients": [
+    {
+      "item": "thaumicbases:thauminite_ingot"
+    }
+  ]
+}

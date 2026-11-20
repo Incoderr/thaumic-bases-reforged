@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -32,9 +32,9 @@ import thaumcraft.research.ResearchCategories;
 import thaumcraft.research.ResearchPage;
 
 final class Rosehip {
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var briar = blocks.registerBlock("briar", Briar::new,
-            p -> p.noCollision().randomTicks().instabreak().sound(SoundType.GRASS));
+            p -> p.noCollission().randomTicks().instabreak().sound(SoundType.GRASS));
         items.registerSimpleBlockItem(briar);
         items.registerItem("briar_seedbag", p -> new BlockItem(briar.get(), p));
         items.registerItem("rosehip_syrup", Syrup::new, p -> p.stacksTo(16));
@@ -49,20 +49,20 @@ final class Rosehip {
         }
 
         @Override
-        protected ItemLike getBaseSeedId() { return net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(Bases.id("briar_seedbag")); }
+        protected ItemLike getBaseSeedId() { return net.minecraft.core.registries.BuiltInRegistries.ITEM.get(Bases.id("briar_seedbag")); }
     }
 
     private static final class Syrup extends Item {
         Syrup(Properties properties) { super(properties); }
 
         @Override
-        public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
             player.startUsingItem(hand);
-            return InteractionResult.CONSUME;
+            return net.minecraft.world.InteractionResultHolder.consume(player.getItemInHand(hand));
         }
 
         @Override
-        public ItemUseAnimation getUseAnimation(ItemStack stack) { return ItemUseAnimation.DRINK; }
+        public UseAnim getUseAnimation(ItemStack stack) { return UseAnim.DRINK; }
 
         @Override
         public int getUseDuration(ItemStack stack, LivingEntity user) { return 32; }
@@ -80,7 +80,7 @@ final class Rosehip {
             var phial = new ItemStack(ModItems.GLASS_PHIAL.get());
             if (stack.isEmpty()) return phial;
             if (user instanceof Player player && !player.getInventory().add(phial)) {
-                player.drop(phial, false, net.minecraft.util.Prediction.PREDICTED);
+                player.drop(phial, false);
             }
             return stack;
         }

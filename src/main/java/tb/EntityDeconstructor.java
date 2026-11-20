@@ -23,8 +23,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -52,14 +50,14 @@ final class EntityDeconstructor extends Block implements EntityBlock {
     private static java.util.function.Supplier<EntityDeconstructor> block;
     private static final DeferredRegister<BlockEntityType<?>> TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Bases.ID);
     private static final java.util.function.Supplier<BlockEntityType<Chamber>> TYPE = TYPES.register(NAME,
-        () -> new BlockEntityType<>(Chamber::new, block.get()));
+        () -> BlockEntityType.Builder.of(Chamber::new, block.get()).build(null));
 
     private EntityDeconstructor(Properties properties) {
         super(properties);
         registerDefaultState(defaultBlockState().setValue(CRYSTAL_MASK, 0));
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var deconstructor = blocks.registerBlock(NAME, EntityDeconstructor::new, p -> p.strength(3, 15).noOcclusion());
         block = deconstructor;
         items.registerSimpleBlockItem(deconstructor);
@@ -103,13 +101,13 @@ final class EntityDeconstructor extends Block implements EntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
-        if (!(level.getBlockEntity(pos) instanceof Chamber chamber)) return InteractionResult.PASS;
+        if (!(level.getBlockEntity(pos) instanceof Chamber chamber)) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (!id.getNamespace().equals(Bases.ID) || !id.getPath().endsWith("_crystal_block")) return InteractionResult.PASS;
+        if (!id.getNamespace().equals(Bases.ID) || !id.getPath().endsWith("_crystal_block")) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         int index = CRYSTALS.indexOf(id.getPath().replace("_crystal_block", ""));
-        if (index < 0) return InteractionResult.PASS;
+        if (index < 0) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         int current = state.getValue(CRYSTAL_MASK);
         int bit = 1 << index;
         if (!level.isClientSide()) {
@@ -122,7 +120,7 @@ final class EntityDeconstructor extends Block implements EntityBlock {
                 message(player, "crystals", Integer.bitCount(current | bit));
             }
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     private static void message(Player player, String key, Object... values) {
@@ -159,7 +157,7 @@ final class EntityDeconstructor extends Block implements EntityBlock {
                 mob -> mob.isAlive() && !mob.isSpectator() && !mob.getUUID().equals(owner)
                     && (!(mob instanceof Player target) || !target.hasInfiniteMaterials()))) {
                 AspectList aspects = AspectHelper.getEntityTags(entity);
-                if (aspects == null || aspects.isEmpty() || !entity.hurtServer(level, level.damageSources().magic(), 1)) continue;
+                if (aspects == null || aspects.isEmpty() || !entity.hurt(level.damageSources().magic(), 1)) continue;
                 reward(level, player, crystals, distance, range, aspects);
                 particles(level, center);
                 return;
@@ -195,14 +193,16 @@ final class EntityDeconstructor extends Block implements EntityBlock {
         }
 
         @Override
-        protected void saveAdditional(ValueOutput output) {
-            super.saveAdditional(output);
+        protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+            super.saveAdditional(tag, registries);
+            var output = new PortNbt.Output(tag, registries);
             if (owner != null) output.store("owner", net.minecraft.core.UUIDUtil.CODEC, owner);
         }
 
         @Override
-        protected void loadAdditional(ValueInput input) {
-            super.loadAdditional(input);
+        protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+            super.loadAdditional(tag, registries);
+            var input = new PortNbt.Input(tag, registries);
             owner = input.read("owner", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
         }
     }

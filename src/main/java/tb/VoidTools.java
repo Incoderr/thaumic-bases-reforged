@@ -28,7 +28,7 @@ final class VoidTools {
     private static final String RESEARCH = "TB.VoidTools";
     private static final String SEED_RESEARCH = "TB.VoidSeed";
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         items.registerItem("void_shears", Shears::new,
             p -> p.durability(238).rarity(Rarity.UNCOMMON).component(DataComponents.TOOL, ShearsItem.createToolProperties()));
         items.registerItem("void_flint_and_steel", Flint::new, p -> p.durability(64).rarity(Rarity.UNCOMMON));
@@ -38,7 +38,7 @@ final class VoidTools {
         Shears(Properties p) { super(p); }
 
         @Override
-        public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, EquipmentSlot slot) {
+        public void inventoryTick(ItemStack stack, net.minecraft.world.level.Level level, Entity owner, int slot, boolean selected) {
             SelfRepair.tick(stack, owner);
         }
 
@@ -50,7 +50,7 @@ final class VoidTools {
         Flint(Properties p) { super(p); }
 
         @Override
-        public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, EquipmentSlot slot) {
+        public void inventoryTick(ItemStack stack, net.minecraft.world.level.Level level, Entity owner, int slot, boolean selected) {
             SelfRepair.tick(stack, owner);
         }
 

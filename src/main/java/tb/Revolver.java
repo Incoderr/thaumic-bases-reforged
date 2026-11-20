@@ -26,12 +26,11 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.component.TooltipDisplay;
-import org.jspecify.annotations.Nullable;
+import javax.annotation.Nullable;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -57,9 +56,9 @@ final class Revolver extends Item implements WarpingGear {
     static final Supplier<MenuType<RevolverMenu>> MENU =
         MENUS.register(ID, () -> new MenuType<>(RevolverMenu::new, FeatureFlags.VANILLA_SET));
 
-    private static final Supplier<DataComponentType<ItemStackTemplate>> JAR =
-        COMPONENTS.register("revolver_jar", () -> DataComponentType.<ItemStackTemplate>builder()
-            .persistent(ItemStackTemplate.CODEC).networkSynchronized(ItemStackTemplate.STREAM_CODEC).build());
+    private static final Supplier<DataComponentType<ItemStack>> JAR =
+        COMPONENTS.register("revolver_jar", () -> DataComponentType.<ItemStack>builder()
+            .persistent(ItemStack.CODEC).networkSynchronized(ItemStack.STREAM_CODEC).build());
     private static final Supplier<DataComponentType<Integer>> ROUNDS =
         COMPONENTS.register("revolver_rounds", () -> DataComponentType.<Integer>builder()
             .persistent(Codec.intRange(0, 7)).networkSynchronized(ByteBufCodecs.VAR_INT).build());
@@ -73,7 +72,7 @@ final class Revolver extends Item implements WarpingGear {
         return SOUNDS.register(id, () -> SoundEvent.createVariableRangeEvent(Bases.id(id)));
     }
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         items.registerItem(ID, Revolver::new, p -> p.stacksTo(1).durability(512).rarity(Rarity.RARE));
     }
 
@@ -86,7 +85,7 @@ final class Revolver extends Item implements WarpingGear {
 
     static ItemStack storedJar(ItemStack revolver) {
         var stored = revolver.get(JAR.get());
-        return stored == null ? ItemStack.EMPTY : stored.create();
+        return stored == null ? ItemStack.EMPTY : stored.copy();
     }
 
     static boolean isTelumJar(ItemStack stack) {
@@ -96,7 +95,7 @@ final class Revolver extends Item implements WarpingGear {
 
     static void setJar(ItemStack revolver, ItemStack stack) {
         if (stack.isEmpty()) revolver.remove(JAR.get());
-        else revolver.set(JAR.get(), ItemStackTemplate.fromNonEmptyStack(stack, 1));
+        else revolver.set(JAR.get(), stack.copyWithCount(1));
     }
 
     static int rounds(ItemStack stack) {
@@ -125,19 +124,19 @@ final class Revolver extends Item implements WarpingGear {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var held = player.getItemInHand(hand);
-        player.getCooldowns().addCooldown(held, 4);
+        player.getCooldowns().addCooldown(held.getItem(), 4);
         if (level instanceof ServerLevel server) {
             var stack = held;
             var sound = EMPTY.get();
             if (rounds(stack) > 0) {
-                if (!RevolverBolt.fire(server, player, stack)) return InteractionResult.FAIL;
+                if (!RevolverBolt.fire(server, player, stack)) return net.minecraft.world.InteractionResultHolder.fail(player.getItemInHand(hand));
                 stack.set(ROUNDS.get(), rounds(stack) - 1);
                 var installedJar = storedJar(stack);
                 stack.hurtAndBreak(1, player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                 if (stack.isEmpty() && !installedJar.isEmpty() && !player.getInventory().add(installedJar)) {
-                    player.drop(installedJar, false, net.minecraft.util.Prediction.PREDICTED);
+                    player.drop(installedJar, false);
                 }
                 sound = SHOT.get();
             } else if (reload(stack)) {
@@ -145,17 +144,17 @@ final class Revolver extends Item implements WarpingGear {
             }
             server.playSound(null, player.blockPosition(), sound, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.InteractionResultHolder.success(player.getItemInHand(hand));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> builder, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> builder, TooltipFlag flag) {
         var jar = storedJar(stack);
         int essentia = AspectKeys.ASPECTS.getOrDefault(jar, new AspectList()).getAmount(Aspect.WEAPON);
-        builder.accept(Component.translatable("item.thaumicbases.revolver.ammo", rounds(stack), essentia));
+        builder.add(Component.translatable("item.thaumicbases.revolver.ammo", rounds(stack), essentia));
         for (var upgrade : RevolverUpgrade.values()) {
             int level = upgrade.level(stack);
-            if (level > 0) builder.accept(Component.translatable(upgrade.translationKey(), level));
+            if (level > 0) builder.add(Component.translatable(upgrade.translationKey(), level));
         }
     }
 
@@ -168,7 +167,7 @@ final class Revolver extends Item implements WarpingGear {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+    public void inventoryTick(ItemStack stack, Level level, Entity owner, int slot, boolean selected) {
         int repair = RevolverUpgrade.VOID.level(stack);
         if (repair > 0 && stack.isDamaged() && owner instanceof LivingEntity && owner.tickCount % 100 < repair) {
             stack.setDamageValue(stack.getDamageValue() - 1);

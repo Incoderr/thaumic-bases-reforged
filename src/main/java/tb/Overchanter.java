@@ -24,8 +24,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -43,7 +41,7 @@ import thaumcraft.research.ResearchPage;
 import thaumcraft.wand.WandInteractable;
 import thaumcraft.wand.Wands;
 
-final class Overchanter extends Block implements EntityBlock, WandInteractable {
+final class Overchanter extends PortEntityBlock implements EntityBlock, WandInteractable {
     private static final String NAME = "overchanter";
     private static final int ESSENTIA_COST = 32;
     private static final int LEVEL_COST = 30;
@@ -52,13 +50,13 @@ final class Overchanter extends Block implements EntityBlock, WandInteractable {
     private static java.util.function.Supplier<Overchanter> block;
     private static final DeferredRegister<BlockEntityType<?>> TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Bases.ID);
     private static final java.util.function.Supplier<BlockEntityType<Table>> TYPE = TYPES.register(NAME,
-        () -> new BlockEntityType<>(Table::new, block.get()));
+        () -> BlockEntityType.Builder.of(Table::new, block.get()).build(null));
 
     private Overchanter(Properties properties) {
         super(properties);
     }
 
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var table = blocks.registerBlock(NAME, Overchanter::new,
             p -> p.strength(5, 20).noOcclusion().requiresCorrectToolForDrops());
         block = table;
@@ -86,17 +84,17 @@ final class Overchanter extends Block implements EntityBlock, WandInteractable {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                           Player player, InteractionHand hand, BlockHitResult hit) {
         if (Wands.isWand(stack) || !(level.getBlockEntity(pos) instanceof Table table) || !table.stack.isEmpty()
-            || nextEnchantment(stack) == null) return InteractionResult.PASS;
+            || nextEnchantment(stack) == null) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (!level.isClientSide()) {
             table.stack = stack.copyWithCount(1);
             stack.consume(1, player);
             table.setChanged();
             status(player, "loaded");
         }
-        return InteractionResult.SUCCESS;
+        return net.minecraft.world.ItemInteractionResult.SUCCESS;
     }
 
     @Override
@@ -141,7 +139,7 @@ final class Overchanter extends Block implements EntityBlock, WandInteractable {
         var marks = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
         for (var enchantment : EnchantmentHelper.getEnchantmentsForCrafting(stack).keySet()) {
             var id = enchantment.unwrapKey();
-            if (id.isPresent() && !marks.getBooleanOr(MARK_PREFIX + id.get().identifier(), false)) return enchantment;
+            if (id.isPresent() && !marks.getBoolean(MARK_PREFIX + id.get().location())) return enchantment;
         }
         return null;
     }
@@ -153,11 +151,11 @@ final class Overchanter extends Block implements EntityBlock, WandInteractable {
         enchantments.set(enchantment, enchantments.getLevel(enchantment) + 1);
         EnchantmentHelper.setEnchantments(stack, enchantments.toImmutable());
         CustomData.update(DataComponents.CUSTOM_DATA, stack,
-            tag -> tag.putBoolean(MARK_PREFIX + enchantment.unwrapKey().orElseThrow().identifier(), true));
+            tag -> tag.putBoolean(MARK_PREFIX + enchantment.unwrapKey().orElseThrow().location(), true));
         return true;
     }
 
-    static final class Table extends BlockEntity {
+    static final class Table extends BlockEntity implements PortEntityBlock.Removal {
         private ItemStack stack = ItemStack.EMPTY;
         private boolean armed;
         private boolean running;
@@ -207,14 +205,14 @@ final class Overchanter extends Block implements EntityBlock, WandInteractable {
         }
 
         @Override
-        public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-            if (getLevel() instanceof ServerLevel server && !stack.isEmpty()) Block.popResource(server, pos, remove());
-            super.preRemoveSideEffects(pos, state);
+        public void onBlockRemoved(BlockPos pos, BlockState state) {
+            if (getLevel() instanceof ServerLevel server && !stack.isEmpty()) Block.popResource(server, getBlockPos(), remove());
         }
 
         @Override
-        protected void saveAdditional(ValueOutput output) {
-            super.saveAdditional(output);
+        protected void saveAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+            super.saveAdditional(tag, registries);
+            var output = new PortNbt.Output(tag, registries);
             output.store("item", ItemStack.OPTIONAL_CODEC, stack);
             output.putBoolean("armed", armed);
             output.putBoolean("running", running);
@@ -223,8 +221,9 @@ final class Overchanter extends Block implements EntityBlock, WandInteractable {
         }
 
         @Override
-        protected void loadAdditional(ValueInput input) {
-            super.loadAdditional(input);
+        protected void loadAdditional(net.minecraft.nbt.CompoundTag tag, net.minecraft.core.HolderLookup.Provider registries) {
+            super.loadAdditional(tag, registries);
+            var input = new PortNbt.Input(tag, registries);
             stack = input.read("item", ItemStack.OPTIONAL_CODEC).orElse(ItemStack.EMPTY);
             armed = input.getBooleanOr("armed", false);
             running = input.getBooleanOr("running", false);

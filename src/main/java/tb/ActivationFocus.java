@@ -40,7 +40,7 @@ final class ActivationFocus extends FocusItem {
 
     ActivationFocus(Properties properties) { super(properties); }
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         items.registerItem(ID, ActivationFocus::new, FocusItem::properties);
     }
 
@@ -48,7 +48,7 @@ final class ActivationFocus extends FocusItem {
     public int getFocusColor(ItemStack focus) { return 0xAAAAAA; }
 
     @Override
-    public net.minecraft.resources.Identifier getFocusTexture(ItemStack focus) { return Bases.id("item/focus_activation"); }
+    public net.minecraft.resources.ResourceLocation getFocusTexture(ItemStack focus) { return Bases.id("item/focus_activation"); }
 
     @Override
     public AspectList getVisCost(ItemStack focus) { return new AspectList().add(Aspect.ORDER, 5).add(Aspect.EARTH, 10); }
@@ -88,7 +88,7 @@ final class ActivationFocus extends FocusItem {
         var cost = getVisCost(focus);
         if (!caster.consumeAllVis(wand, player, cost, false, false)) return InteractionResult.PASS;
         if (!level.isClientSide()) {
-            var direction = Direction.getApproximateNearest(player.getX() - center.x, player.getY() - center.y,
+            var direction = Direction.getNearest(player.getX() - center.x, player.getY() - center.y,
                 player.getZ() - center.z);
             var block = level.getBlockState(target.pos());
             var remoteHit = new BlockHitResult(center, direction, target.pos(), false);

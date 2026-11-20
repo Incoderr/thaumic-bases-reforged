@@ -1,1 +1,21 @@
-{"type":"minecraft:crafting_shaped","result":{"id":"thaumicbases:gold_etched_obsidian","count":5},"key":{"#":"minecraft:obsidian","@":"minecraft:gold_nugget"},"pattern":["@#@","###","@#@"],"category":"misc"}
+{
+  "type": "minecraft:crafting_shaped",
+  "result": {
+    "id": "thaumicbases:gold_etched_obsidian",
+    "count": 5
+  },
+  "key": {
+    "#": {
+      "item": "minecraft:obsidian"
+    },
+    "@": {
+      "item": "minecraft:gold_nugget"
+    }
+  },
+  "pattern": [
+    "@#@",
+    "###",
+    "@#@"
+  ],
+  "category": "misc"
+}

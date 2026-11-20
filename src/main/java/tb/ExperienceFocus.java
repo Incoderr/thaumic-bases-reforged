@@ -3,7 +3,7 @@ package tb;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -43,7 +43,7 @@ final class ExperienceFocus extends FocusItem {
     static final String ID = "focus_experience";
     private static final String KEY = "TB.Foci.Experience";
     private static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE,
-        Identifier.fromNamespaceAndPath("c", "bosses"));
+        ResourceLocation.fromNamespaceAndPath("c", "bosses"));
     static final FocusUpgradeType DECOMPOSING = new FocusUpgradeType(102, "tb_decomposing",
         Bases.id("textures/foci/decomposing.png"), new AspectList().add(Aspect.ENTROPY, 16).add(Aspect.EARTH, 16));
     static final FocusUpgradeType VAPORIZING = new FocusUpgradeType(103, "tb_vaporizing",
@@ -51,7 +51,7 @@ final class ExperienceFocus extends FocusItem {
 
     ExperienceFocus(Properties properties) { super(properties); }
 
-    static void register(DeferredRegister.Items items) {
+    static void register(PortRegistration.Items items) {
         items.registerItem(ID, ExperienceFocus::new, FocusItem::properties);
     }
 
@@ -59,14 +59,14 @@ final class ExperienceFocus extends FocusItem {
     public int getFocusColor(ItemStack focus) { return 16318428; }
 
     @Override
-    public Identifier getFocusTexture(ItemStack focus) { return Bases.id("item/focus_experience"); }
+    public ResourceLocation getFocusTexture(ItemStack focus) { return Bases.id("item/focus_experience"); }
 
     @Override
     public WandFocusAnimation getAnimation(ItemStack focus) { return WandFocusAnimation.CHARGE; }
 
     @Override
-    public void appendCostText(ItemStack stack, java.util.function.Consumer<net.minecraft.network.chat.Component> builder) {
-        builder.accept(net.minecraft.network.chat.Component.translatable("item.thaumicbases.focus_experience.cost"));
+    public void appendCostText(ItemStack stack, java.util.List<net.minecraft.network.chat.Component> builder) {
+        builder.add(net.minecraft.network.chat.Component.translatable("item.thaumicbases.focus_experience.cost"));
     }
 
     @Override
@@ -103,7 +103,7 @@ final class ExperienceFocus extends FocusItem {
     }
 
     boolean consumeBlock(ItemStack wand, ServerPlayer player, BlockPos pos) {
-        ServerLevel level = player.level();
+        ServerLevel level = (ServerLevel) player.level();
         var state = level.getBlockState(pos);
         float hardness = state.getDestroySpeed(level, pos);
         if (hardness <= 0 || state.hasBlockEntity() || !level.mayInteract(player, pos)
@@ -143,7 +143,7 @@ final class ExperienceFocus extends FocusItem {
         var cost = primalCost(Mth.floor(health * 100 / rank));
         var payer = findPayer(wand, player, cost);
         if (payer.isEmpty()) return false;
-        if (!target.hurtServer(level, level.damageSources().playerAttack(player), Float.MAX_VALUE)) return false;
+        if (!target.hurt(level.damageSources().playerAttack(player), Float.MAX_VALUE)) return false;
         ((WandItem) payer.getItem()).consumeAllVis(payer, player, cost, true, false);
         if (!target.isAlive()) ExperienceOrb.award(level, target.position(), Mth.floor(health * 3));
         return true;

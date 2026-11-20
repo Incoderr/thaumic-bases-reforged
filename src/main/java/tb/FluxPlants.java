@@ -10,7 +10,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.VegetationBlock;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -28,11 +28,11 @@ import thaumcraft.research.ResearchCategories;
 import thaumcraft.research.ResearchPage;
 
 final class FluxPlants {
-    static void register(DeferredRegister.Blocks blocks, DeferredRegister.Items items) {
+    static void register(PortRegistration.Blocks blocks, PortRegistration.Items items) {
         var ashroom = blocks.registerBlock("ashroom", Ashroom::new,
-            p -> p.noCollision().instabreak().randomTicks().sound(SoundType.CROP));
+            p -> p.noCollission().instabreak().randomTicks().sound(SoundType.CROP));
         var flaxium = blocks.registerBlock("flaxium", Flaxium::new,
-            p -> p.noCollision().instabreak().randomTicks().sound(SoundType.GRASS));
+            p -> p.noCollission().instabreak().randomTicks().sound(SoundType.GRASS));
         items.registerSimpleBlockItem(ashroom);
         items.registerSimpleBlockItem(flaxium);
     }
@@ -80,7 +80,8 @@ final class FluxPlants {
         }
     }
 
-    static final class Flaxium extends VegetationBlock {
+    static final class Flaxium extends BushBlock {
+        @Override protected com.mojang.serialization.MapCodec<? extends BushBlock> codec() { return simpleCodec(Flaxium::new); }
         Flaxium(BlockBehaviour.Properties properties) {
             super(properties);
         }
