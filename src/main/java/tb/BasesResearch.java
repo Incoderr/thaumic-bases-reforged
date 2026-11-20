@@ -31,6 +31,7 @@ final class BasesResearch extends ResearchItem {
         new Reference("VOIDMETAL", 11, 0),
         new Reference("INFUSION", 3, -18),
         new Reference("INFUSIONENCHANTMENT", -3, 1),
+        new Reference("ENCHFABRIC", 8, -4),
         new Reference("VISPOWER", 4, -21),
         new Reference("LEVITATOR", 0, 6),
         new Reference("DISTILESSENTIA", 6, 2),
