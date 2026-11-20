@@ -32,6 +32,8 @@ final class BasesResearch extends ResearchItem {
         new Reference("INFUSION", 3, -18),
         new Reference("INFUSIONENCHANTMENT", -3, 1),
         new Reference("ENCHFABRIC", 8, -4),
+        new Reference("NODESTABILIZERADV", -1, -23),
+        new Reference("PRIMPEARL", 3, -29),
         new Reference("VISPOWER", 4, -21),
         new Reference("LEVITATOR", 0, 6),
         new Reference("DISTILESSENTIA", 6, 2),
